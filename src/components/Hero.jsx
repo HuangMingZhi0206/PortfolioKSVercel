@@ -318,7 +318,7 @@ const Hero = () => {
               className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 mt-4"
             >
               <motion.a
-                href="/cv/Kevin_Syonin_CV.pdf"
+                href={aboutData?.resume_url || "/cv/Kevin_Syonin_CV.pdf"}
                 target="_blank"
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.05 }}
@@ -332,7 +332,7 @@ const Hero = () => {
                 View CV
               </motion.a>
               <motion.a
-                href="/cv/Kevin_Syonin_CV.pdf"
+                href={aboutData?.resume_url || "/cv/Kevin_Syonin_CV.pdf"}
                 download="Kevin_Syonin_CV.pdf"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
