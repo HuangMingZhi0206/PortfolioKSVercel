@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
+import { API_URL, API_BASE_URL } from '../../config/api'
 import { 
   LayoutDashboard, User, Briefcase, FolderOpen, Award, GraduationCap, 
   MessageSquare, Settings, LogOut, Menu, X, ChevronRight, Bell,
@@ -23,7 +24,6 @@ const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [stats, setStats] = useState(null)
 
-  const API_URL = 'http://localhost:5000/api'
   const token = localStorage.getItem('admin_token')
 
   const fetchStats = async () => {

@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Trash2, Check, Clock, RefreshCw } from 'lucide-react'
+import { API_URL } from '../../../config/api'
 
 const MessageManager = ({ onRead }) => {
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState({ type: '', text: '' })
 
-  const API_URL = 'http://localhost:5000/api'
   const token = localStorage.getItem('admin_token')
 
   const fetchMessages = async () => {

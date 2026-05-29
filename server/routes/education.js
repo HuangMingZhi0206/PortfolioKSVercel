@@ -1,5 +1,5 @@
 import express from 'express'
-import { pool } from '../config/database.js'
+import { dbAll, dbRun } from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
 import { upload } from '../middleware/upload.js'
 
@@ -8,9 +8,9 @@ const router = express.Router()
 // Get all education (public)
 router.get('/', async (req, res) => {
   try {
-    const [rows] = await pool.query(`
-      SELECT * FROM education WHERE is_active = TRUE ORDER BY is_current DESC, start_date DESC
-    `)
+    const rows = await dbAll(`
+      SELECT * FROM education WHERE is_active = 1 ORDER BY is_current DESC, start_date DESC
+    `, [])
     res.json(rows)
   } catch (error) {
     console.error('Get education error:', error)
@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
 // Get all education including inactive (admin)
 router.get('/all', authenticateToken, async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM education ORDER BY is_current DESC, start_date DESC')
+    const rows = await dbAll('SELECT * FROM education ORDER BY is_current DESC, start_date DESC', [])
     res.json(rows)
   } catch (error) {
     console.error('Get all education error:', error)
@@ -34,13 +34,13 @@ router.post('/', authenticateToken, async (req, res) => {
   try {
     const { institution, degree, field_of_study, start_date, end_date, is_current, description, gpa } = req.body
 
-    const [result] = await pool.query(
+    const result = await dbRun(
       `INSERT INTO education (institution, degree, field_of_study, start_date, end_date, is_current, description, gpa)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [institution, degree, field_of_study, start_date, end_date || null, is_current || false, description, gpa]
+      [institution, degree, field_of_study, start_date, end_date || null, is_current ? 1 : 0, description, gpa]
     )
 
-    res.json({ message: 'Education added successfully', id: result.insertId })
+    res.json({ message: 'Education added successfully', id: result.lastInsertRowid })
   } catch (error) {
     console.error('Add education error:', error)
     res.status(500).json({ error: 'Server error' })
@@ -53,10 +53,10 @@ router.put('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params
     const { institution, degree, field_of_study, start_date, end_date, is_current, description, gpa, is_active } = req.body
 
-    await pool.query(
+    await dbRun(
       `UPDATE education SET institution = ?, degree = ?, field_of_study = ?, start_date = ?, 
        end_date = ?, is_current = ?, description = ?, gpa = ?, is_active = ? WHERE id = ?`,
-      [institution, degree, field_of_study, start_date, end_date || null, is_current || false, description, gpa, is_active !== false, id]
+      [institution, degree, field_of_study, start_date, end_date || null, is_current ? 1 : 0, description, gpa, is_active !== false ? 1 : 0, id]
     )
 
     res.json({ message: 'Education updated successfully' })
@@ -74,8 +74,8 @@ router.post('/:id/upload-logo', authenticateToken, upload.single('logo'), async 
       return res.status(400).json({ error: 'No file uploaded' })
     }
 
-    const logoUrl = `/uploads/education/${req.file.filename}`
-    await pool.query('UPDATE education SET logo = ? WHERE id = ?', [logoUrl, id])
+    const logoUrl = req.file.path
+    await dbRun('UPDATE education SET logo = ? WHERE id = ?', [logoUrl, id])
 
     res.json({ message: 'Logo uploaded successfully', logoUrl })
   } catch (error) {
@@ -88,7 +88,7 @@ router.post('/:id/upload-logo', authenticateToken, upload.single('logo'), async 
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params
-    await pool.query('DELETE FROM education WHERE id = ?', [id])
+    await dbRun('DELETE FROM education WHERE id = ?', [id])
     res.json({ message: 'Education deleted successfully' })
   } catch (error) {
     console.error('Delete education error:', error)

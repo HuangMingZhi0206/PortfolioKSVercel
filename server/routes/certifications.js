@@ -1,5 +1,5 @@
 import express from 'express'
-import { pool } from '../config/database.js'
+import { dbAll, dbRun } from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
 import { upload } from '../middleware/upload.js'
 
@@ -8,26 +8,26 @@ const router = express.Router()
 // Get all certifications (public)
 router.get('/', async (req, res) => {
   try {
-    const [rows] = await pool.query(`
-      SELECT * FROM certifications WHERE is_active = TRUE ORDER BY order_index, issue_date DESC
-    `)
-    
+    const rows = await dbAll(`
+      SELECT * FROM certifications WHERE is_active = 1 ORDER BY order_index, issue_date DESC
+    `, [])
+
     // Get media and skills for each certification
     for (let cert of rows) {
-      const [media] = await pool.query(
+      const media = await dbAll(
         'SELECT * FROM certification_media WHERE certification_id = ? ORDER BY created_at',
         [cert.id]
       )
       cert.media = media
-      
-      const [skills] = await pool.query(`
+
+      const skills = await dbAll(`
         SELECT s.* FROM skills s
         JOIN certification_skills cs ON s.id = cs.skill_id
         WHERE cs.certification_id = ?
       `, [cert.id])
       cert.skills = skills
     }
-    
+
     res.json(rows)
   } catch (error) {
     console.error('Get certifications error:', error)
@@ -38,24 +38,24 @@ router.get('/', async (req, res) => {
 // Get all certifications including inactive (admin)
 router.get('/all', authenticateToken, async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM certifications ORDER BY order_index, issue_date DESC')
-    
+    const rows = await dbAll('SELECT * FROM certifications ORDER BY order_index, issue_date DESC', [])
+
     // Get media and skills for each certification
     for (let cert of rows) {
-      const [media] = await pool.query(
+      const media = await dbAll(
         'SELECT * FROM certification_media WHERE certification_id = ? ORDER BY created_at',
         [cert.id]
       )
       cert.media = media
-      
-      const [skills] = await pool.query(`
+
+      const skills = await dbAll(`
         SELECT s.* FROM skills s
         JOIN certification_skills cs ON s.id = cs.skill_id
         WHERE cs.certification_id = ?
       `, [cert.id])
       cert.skills = skills
     }
-    
+
     res.json(rows)
   } catch (error) {
     console.error('Get all certifications error:', error)
@@ -68,13 +68,13 @@ router.post('/', authenticateToken, async (req, res) => {
   try {
     const { title, issuer, issue_date, expiry_date, credential_id, credential_url, description } = req.body
 
-    const [result] = await pool.query(
+    const result = await dbRun(
       `INSERT INTO certifications (title, issuer, issue_date, expiry_date, credential_id, credential_url, description)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [title, issuer, issue_date, expiry_date || null, credential_id, credential_url, description]
     )
 
-    res.json({ message: 'Certification added successfully', id: result.insertId })
+    res.json({ message: 'Certification added successfully', id: result.lastInsertRowid })
   } catch (error) {
     console.error('Add certification error:', error)
     res.status(500).json({ error: 'Server error' })
@@ -87,10 +87,10 @@ router.put('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params
     const { title, issuer, issue_date, expiry_date, credential_id, credential_url, description, is_active } = req.body
 
-    await pool.query(
+    await dbRun(
       `UPDATE certifications SET title = ?, issuer = ?, issue_date = ?, expiry_date = ?, 
        credential_id = ?, credential_url = ?, description = ?, is_active = ? WHERE id = ?`,
-      [title, issuer, issue_date, expiry_date || null, credential_id, credential_url, description, is_active !== false, id]
+      [title, issuer, issue_date, expiry_date || null, credential_id, credential_url, description, is_active !== false ? 1 : 0, id]
     )
 
     res.json({ message: 'Certification updated successfully' })
@@ -108,8 +108,8 @@ router.post('/:id/upload-image', authenticateToken, upload.single('image'), asyn
       return res.status(400).json({ error: 'No file uploaded' })
     }
 
-    const imageUrl = `/uploads/certifications/${req.file.filename}`
-    await pool.query('UPDATE certifications SET image = ? WHERE id = ?', [imageUrl, id])
+    const imageUrl = req.file.path
+    await dbRun('UPDATE certifications SET image = ? WHERE id = ?', [imageUrl, id])
 
     res.json({ message: 'Image uploaded successfully', imageUrl })
   } catch (error) {
@@ -123,23 +123,23 @@ router.post('/:id/upload-media', authenticateToken, upload.single('media'), asyn
   try {
     const { id } = req.params
     const { title, description } = req.body
-    
+
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' })
     }
 
-    const filePath = `/uploads/certifications/${req.file.filename}`
+    const filePath = req.file.path
     const fileType = req.file.mimetype
 
-    const [result] = await pool.query(
+    const result = await dbRun(
       'INSERT INTO certification_media (certification_id, title, description, file_path, file_type) VALUES (?, ?, ?, ?, ?)',
       [id, title || req.file.originalname, description || '', filePath, fileType]
     )
 
-    res.json({ 
-      message: 'Media uploaded successfully', 
+    res.json({
+      message: 'Media uploaded successfully',
       media: {
-        id: result.insertId,
+        id: result.lastInsertRowid,
         title: title || req.file.originalname,
         description,
         file_path: filePath,
@@ -156,7 +156,7 @@ router.post('/:id/upload-media', authenticateToken, upload.single('media'), asyn
 router.delete('/:id/media/:mediaId', authenticateToken, async (req, res) => {
   try {
     const { mediaId } = req.params
-    await pool.query('DELETE FROM certification_media WHERE id = ?', [mediaId])
+    await dbRun('DELETE FROM certification_media WHERE id = ?', [mediaId])
     res.json({ message: 'Media deleted successfully' })
   } catch (error) {
     console.error('Delete media error:', error)
@@ -170,8 +170,8 @@ router.post('/:id/skills', authenticateToken, async (req, res) => {
     const { id } = req.params
     const { skill_id } = req.body
 
-    await pool.query(
-      'INSERT IGNORE INTO certification_skills (certification_id, skill_id) VALUES (?, ?)',
+    await dbRun(
+      'INSERT OR IGNORE INTO certification_skills (certification_id, skill_id) VALUES (?, ?)',
       [id, skill_id]
     )
 
@@ -186,7 +186,7 @@ router.post('/:id/skills', authenticateToken, async (req, res) => {
 router.delete('/:id/skills/:skillId', authenticateToken, async (req, res) => {
   try {
     const { id, skillId } = req.params
-    await pool.query(
+    await dbRun(
       'DELETE FROM certification_skills WHERE certification_id = ? AND skill_id = ?',
       [id, skillId]
     )
@@ -201,7 +201,7 @@ router.delete('/:id/skills/:skillId', authenticateToken, async (req, res) => {
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params
-    await pool.query('DELETE FROM certifications WHERE id = ?', [id])
+    await dbRun('DELETE FROM certifications WHERE id = ?', [id])
     res.json({ message: 'Certification deleted successfully' })
   } catch (error) {
     console.error('Delete certification error:', error)

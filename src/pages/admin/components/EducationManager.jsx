@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Edit2, Trash2, X, Save, GraduationCap, Calendar, Upload } from 'lucide-react'
+import { API_URL, API_BASE_URL } from '../../../config/api'
 
 const EducationManager = () => {
   const [education, setEducation] = useState([])
@@ -20,7 +21,6 @@ const EducationManager = () => {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
 
-  const API_URL = 'http://localhost:5000/api'
   const token = localStorage.getItem('admin_token')
 
   const fetchEducation = async () => {
@@ -218,7 +218,7 @@ const EducationManager = () => {
                   <div className="relative w-14 h-14 flex-shrink-0">
                     {edu.logo ? (
                       <img
-                        src={`http://localhost:5000${edu.logo}`}
+                        src={`${API_BASE_URL}${edu.logo}`}
                         alt={edu.institution}
                         className="w-full h-full object-cover rounded-xl"
                       />

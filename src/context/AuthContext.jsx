@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import { API_URL } from '../config/api'
 
 const AuthContext = createContext()
 
@@ -14,8 +15,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [token, setToken] = useState(localStorage.getItem('admin_token'))
   const [loading, setLoading] = useState(true)
-
-  const API_URL = 'http://localhost:5000/api'
 
   useEffect(() => {
     const verifyToken = async () => {

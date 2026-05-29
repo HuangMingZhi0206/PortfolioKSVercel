@@ -1,5 +1,5 @@
 import express from 'express'
-import { pool } from '../config/database.js'
+import { dbAll, dbRun } from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
 
 const router = express.Router()
@@ -7,7 +7,7 @@ const router = express.Router()
 // Get all skills (public)
 router.get('/', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM skills WHERE is_active = TRUE ORDER BY category, order_index')
+    const rows = await dbAll('SELECT * FROM skills WHERE is_active = 1 ORDER BY category, order_index', [])
     res.json(rows)
   } catch (error) {
     console.error('Get skills error:', error)
@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
 // Get all skills including inactive (admin)
 router.get('/all', authenticateToken, async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM skills ORDER BY category, order_index')
+    const rows = await dbAll('SELECT * FROM skills ORDER BY category, order_index', [])
     res.json(rows)
   } catch (error) {
     console.error('Get all skills error:', error)
@@ -31,12 +31,12 @@ router.post('/', authenticateToken, async (req, res) => {
   try {
     const { name, category, proficiency, icon, color, order_index } = req.body
 
-    const [result] = await pool.query(
-      'INSERT INTO skills (name, category, proficiency, icon, color, order_index, is_active) VALUES (?, ?, ?, ?, ?, ?, TRUE)',
+    const result = await dbRun(
+      'INSERT INTO skills (name, category, proficiency, icon, color, order_index, is_active) VALUES (?, ?, ?, ?, ?, ?, 1)',
       [name, category, proficiency || 80, icon, color, order_index || 0]
     )
 
-    res.json({ message: 'Skill added successfully', id: result.insertId })
+    res.json({ message: 'Skill added successfully', id: result.lastInsertRowid })
   } catch (error) {
     console.error('Add skill error:', error)
     res.status(500).json({ error: 'Server error' })
@@ -49,9 +49,9 @@ router.put('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params
     const { name, category, proficiency, icon, color, order_index, is_active } = req.body
 
-    await pool.query(
+    await dbRun(
       'UPDATE skills SET name = ?, category = ?, proficiency = ?, icon = ?, color = ?, order_index = ?, is_active = ? WHERE id = ?',
-      [name, category, proficiency, icon, color, order_index, is_active, id]
+      [name, category, proficiency, icon, color, order_index, is_active ? 1 : 0, id]
     )
 
     res.json({ message: 'Skill updated successfully' })
@@ -65,7 +65,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params
-    await pool.query('DELETE FROM skills WHERE id = ?', [id])
+    await dbRun('DELETE FROM skills WHERE id = ?', [id])
     res.json({ message: 'Skill deleted successfully' })
   } catch (error) {
     console.error('Delete skill error:', error)

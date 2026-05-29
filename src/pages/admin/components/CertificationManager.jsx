@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Edit2, Trash2, X, Save, Award, Calendar, ExternalLink, Upload, FileText, Image } from 'lucide-react'
+import { API_URL, API_BASE_URL } from '../../../config/api'
 
 const CertificationManager = () => {
   const [certifications, setCertifications] = useState([])
@@ -27,7 +28,6 @@ const CertificationManager = () => {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
 
-  const API_URL = 'http://localhost:5000/api'
   const token = localStorage.getItem('admin_token')
 
   const fetchCertifications = async () => {
@@ -323,7 +323,7 @@ const CertificationManager = () => {
                 <div className="relative w-16 h-16 flex-shrink-0">
                   {cert.image ? (
                     <img
-                      src={`http://localhost:5000${cert.image}`}
+                      src={`${API_BASE_URL}${cert.image}`}
                       alt={cert.title}
                       className="w-full h-full object-cover rounded-xl"
                     />
@@ -453,20 +453,20 @@ const CertificationManager = () => {
                             {/* Preview */}
                             {media.file_type?.includes('image') ? (
                               <a
-                                href={`http://localhost:5000${media.file_path}`}
+                                href={`${API_BASE_URL}${media.file_path}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="block aspect-video"
                               >
                                 <img
-                                  src={`http://localhost:5000${media.file_path}`}
+                                  src={`${API_BASE_URL}${media.file_path}`}
                                   alt={media.title}
                                   className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                                 />
                               </a>
                             ) : (
                               <a
-                                href={`http://localhost:5000${media.file_path}`}
+                                href={`${API_BASE_URL}${media.file_path}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center justify-center aspect-video bg-gray-800"

@@ -1,7 +1,7 @@
 import express from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import { pool } from '../config/database.js'
+import { dbGet, dbRun } from '../config/database.js'
 
 const router = express.Router()
 
@@ -14,13 +14,12 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password are required' })
     }
 
-    const [users] = await pool.query('SELECT * FROM admin_users WHERE email = ?', [email])
+    const user = await dbGet('SELECT * FROM admin_users WHERE email = ?', [email])
 
-    if (users.length === 0) {
+    if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' })
     }
 
-    const user = users[0]
     const isValidPassword = await bcrypt.compare(password, user.password)
 
     if (!isValidPassword) {
@@ -78,13 +77,12 @@ router.post('/change-password', async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     const { currentPassword, newPassword } = req.body
 
-    const [users] = await pool.query('SELECT * FROM admin_users WHERE id = ?', [decoded.id])
-    
-    if (users.length === 0) {
+    const user = await dbGet('SELECT * FROM admin_users WHERE id = ?', [decoded.id])
+
+    if (!user) {
       return res.status(404).json({ error: 'User not found' })
     }
 
-    const user = users[0]
     const isValidPassword = await bcrypt.compare(currentPassword, user.password)
 
     if (!isValidPassword) {
@@ -92,7 +90,7 @@ router.post('/change-password', async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10)
-    await pool.query('UPDATE admin_users SET password = ? WHERE id = ?', [hashedPassword, decoded.id])
+    await dbRun('UPDATE admin_users SET password = ? WHERE id = ?', [hashedPassword, decoded.id])
 
     res.json({ message: 'Password changed successfully' })
   } catch (error) {

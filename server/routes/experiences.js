@@ -1,5 +1,5 @@
 import express from 'express'
-import { pool } from '../config/database.js'
+import { dbAll, dbRun } from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
 import { upload } from '../middleware/upload.js'
 
@@ -8,25 +8,25 @@ const router = express.Router()
 // Get all experiences (public)
 router.get('/', async (req, res) => {
   try {
-    const [experiences] = await pool.query(`
-      SELECT * FROM experiences WHERE is_active = TRUE ORDER BY is_current DESC, start_date DESC
-    `)
+    const experiences = await dbAll(`
+      SELECT * FROM experiences WHERE is_active = 1 ORDER BY is_current DESC, start_date DESC
+    `, [])
 
     // Get highlights, media, and skills for each experience
     for (let exp of experiences) {
-      const [highlights] = await pool.query(
+      const highlights = await dbAll(
         'SELECT * FROM experience_highlights WHERE experience_id = ? ORDER BY order_index',
         [exp.id]
       )
       exp.highlights = highlights.map(h => h.highlight)
 
-      const [media] = await pool.query(
+      const media = await dbAll(
         'SELECT * FROM experience_media WHERE experience_id = ? ORDER BY created_at',
         [exp.id]
       )
       exp.media = media
 
-      const [skills] = await pool.query(`
+      const skills = await dbAll(`
         SELECT s.* FROM skills s
         JOIN experience_skills es ON s.id = es.skill_id
         WHERE es.experience_id = ?
@@ -44,22 +44,22 @@ router.get('/', async (req, res) => {
 // Get all experiences including inactive (admin)
 router.get('/all', authenticateToken, async (req, res) => {
   try {
-    const [experiences] = await pool.query('SELECT * FROM experiences ORDER BY is_current DESC, start_date DESC')
+    const experiences = await dbAll('SELECT * FROM experiences ORDER BY is_current DESC, start_date DESC', [])
 
     for (let exp of experiences) {
-      const [highlights] = await pool.query(
+      const highlights = await dbAll(
         'SELECT * FROM experience_highlights WHERE experience_id = ? ORDER BY order_index',
         [exp.id]
       )
       exp.highlights = highlights.map(h => h.highlight)
 
-      const [media] = await pool.query(
+      const media = await dbAll(
         'SELECT * FROM experience_media WHERE experience_id = ? ORDER BY created_at',
         [exp.id]
       )
       exp.media = media
 
-      const [skills] = await pool.query(`
+      const skills = await dbAll(`
         SELECT s.* FROM skills s
         JOIN experience_skills es ON s.id = es.skill_id
         WHERE es.experience_id = ?
@@ -79,23 +79,23 @@ router.post('/', authenticateToken, async (req, res) => {
   try {
     const { company, position, employment_type, location, start_date, end_date, is_current, description, highlights } = req.body
 
-    const [result] = await pool.query(
+    const result = await dbRun(
       `INSERT INTO experiences (company, position, employment_type, location, start_date, end_date, is_current, description)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [company, position, employment_type || 'Full-time', location, start_date, end_date || null, is_current || false, description]
+      [company, position, employment_type || 'Full-time', location, start_date, end_date || null, is_current ? 1 : 0, description]
     )
 
     // Add highlights
     if (highlights && highlights.length > 0) {
       for (let i = 0; i < highlights.length; i++) {
-        await pool.query(
+        await dbRun(
           'INSERT INTO experience_highlights (experience_id, highlight, order_index) VALUES (?, ?, ?)',
-          [result.insertId, highlights[i], i]
+          [result.lastInsertRowid, highlights[i], i]
         )
       }
     }
 
-    res.json({ message: 'Experience added successfully', id: result.insertId })
+    res.json({ message: 'Experience added successfully', id: result.lastInsertRowid })
   } catch (error) {
     console.error('Add experience error:', error)
     res.status(500).json({ error: 'Server error' })
@@ -108,17 +108,17 @@ router.put('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params
     const { company, position, employment_type, location, start_date, end_date, is_current, description, highlights, is_active } = req.body
 
-    await pool.query(
+    await dbRun(
       `UPDATE experiences SET company = ?, position = ?, employment_type = ?, location = ?, start_date = ?, end_date = ?, 
        is_current = ?, description = ?, is_active = ? WHERE id = ?`,
-      [company, position, employment_type || 'Full-time', location, start_date, end_date || null, is_current || false, description, is_active !== false, id]
+      [company, position, employment_type || 'Full-time', location, start_date, end_date || null, is_current ? 1 : 0, description, is_active !== false ? 1 : 0, id]
     )
 
     // Update highlights
-    await pool.query('DELETE FROM experience_highlights WHERE experience_id = ?', [id])
+    await dbRun('DELETE FROM experience_highlights WHERE experience_id = ?', [id])
     if (highlights && highlights.length > 0) {
       for (let i = 0; i < highlights.length; i++) {
-        await pool.query(
+        await dbRun(
           'INSERT INTO experience_highlights (experience_id, highlight, order_index) VALUES (?, ?, ?)',
           [id, highlights[i], i]
         )
@@ -140,8 +140,8 @@ router.post('/:id/upload-logo', authenticateToken, upload.single('logo'), async 
       return res.status(400).json({ error: 'No file uploaded' })
     }
 
-    const logoUrl = `/uploads/companies/${req.file.filename}`
-    await pool.query('UPDATE experiences SET company_logo = ? WHERE id = ?', [logoUrl, id])
+    const logoUrl = req.file.path
+    await dbRun('UPDATE experiences SET company_logo = ? WHERE id = ?', [logoUrl, id])
 
     res.json({ message: 'Logo uploaded successfully', logoUrl })
   } catch (error) {
@@ -155,23 +155,23 @@ router.post('/:id/upload-media', authenticateToken, upload.single('media'), asyn
   try {
     const { id } = req.params
     const { title, description } = req.body
-    
+
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' })
     }
 
-    const filePath = `/uploads/experiences/${req.file.filename}`
+    const filePath = req.file.path
     const fileType = req.file.mimetype
 
-    const [result] = await pool.query(
+    const result = await dbRun(
       'INSERT INTO experience_media (experience_id, title, description, file_path, file_type) VALUES (?, ?, ?, ?, ?)',
       [id, title || req.file.originalname, description || '', filePath, fileType]
     )
 
-    res.json({ 
-      message: 'Media uploaded successfully', 
+    res.json({
+      message: 'Media uploaded successfully',
       media: {
-        id: result.insertId,
+        id: result.lastInsertRowid,
         title: title || req.file.originalname,
         description,
         file_path: filePath,
@@ -188,7 +188,7 @@ router.post('/:id/upload-media', authenticateToken, upload.single('media'), asyn
 router.delete('/:id/media/:mediaId', authenticateToken, async (req, res) => {
   try {
     const { mediaId } = req.params
-    await pool.query('DELETE FROM experience_media WHERE id = ?', [mediaId])
+    await dbRun('DELETE FROM experience_media WHERE id = ?', [mediaId])
     res.json({ message: 'Media deleted successfully' })
   } catch (error) {
     console.error('Delete media error:', error)
@@ -202,8 +202,8 @@ router.post('/:id/skills', authenticateToken, async (req, res) => {
     const { id } = req.params
     const { skill_id } = req.body
 
-    await pool.query(
-      'INSERT IGNORE INTO experience_skills (experience_id, skill_id) VALUES (?, ?)',
+    await dbRun(
+      'INSERT OR IGNORE INTO experience_skills (experience_id, skill_id) VALUES (?, ?)',
       [id, skill_id]
     )
 
@@ -218,7 +218,7 @@ router.post('/:id/skills', authenticateToken, async (req, res) => {
 router.delete('/:id/skills/:skillId', authenticateToken, async (req, res) => {
   try {
     const { id, skillId } = req.params
-    await pool.query(
+    await dbRun(
       'DELETE FROM experience_skills WHERE experience_id = ? AND skill_id = ?',
       [id, skillId]
     )
@@ -233,7 +233,7 @@ router.delete('/:id/skills/:skillId', authenticateToken, async (req, res) => {
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params
-    await pool.query('DELETE FROM experiences WHERE id = ?', [id])
+    await dbRun('DELETE FROM experiences WHERE id = ?', [id])
     res.json({ message: 'Experience deleted successfully' })
   } catch (error) {
     console.error('Delete experience error:', error)

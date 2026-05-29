@@ -5,7 +5,7 @@ import { Text, RoundedBox } from '@react-three/drei'
 import { Github, Linkedin, Mail, Instagram, ChevronDown, Code2, Cpu, Database, Wifi, Terminal, Layers, Settings, Binary, Cog, CircuitBoard, Rocket, Lightbulb, Wrench, Monitor, FileDown, Eye } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 
-const API_URL = 'http://localhost:5000/api'
+import { API_URL } from '../config/api'
 
 // Use public folder for large image
 const profileImg = '/profile.png'
@@ -13,7 +13,7 @@ const profileImg = '/profile.png'
 // 3D Floating IT Icon Component
 const FloatingITIcon = ({ position, icon, color, speed, rotationSpeed = 0.01 }) => {
   const meshRef = useRef()
-  
+
   useFrame((state) => {
     if (meshRef.current) {
       meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * speed) * 0.4
@@ -43,7 +43,7 @@ const FloatingITIcon = ({ position, icon, color, speed, rotationSpeed = 0.01 }) 
 // 3D Code Bracket
 const CodeBracket = ({ position, speed }) => {
   const meshRef = useRef()
-  
+
   useFrame((state) => {
     if (meshRef.current) {
       meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * speed) * 0.3
@@ -69,7 +69,7 @@ const CodeBracket = ({ position, speed }) => {
 // 3D Circuit Pattern
 const CircuitLine = ({ position, speed }) => {
   const meshRef = useRef()
-  
+
   useFrame((state) => {
     if (meshRef.current) {
       meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * speed) * 0.25
@@ -96,7 +96,7 @@ const CircuitLine = ({ position, speed }) => {
 // 3D Binary Rain
 const BinaryText = ({ position, speed }) => {
   const meshRef = useRef()
-  
+
   useFrame((state) => {
     if (meshRef.current) {
       meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * speed) * 0.5
@@ -116,7 +116,7 @@ const BinaryText = ({ position, speed }) => {
 // 3D Gear/Cog
 const Gear3D = ({ position, speed }) => {
   const meshRef = useRef()
-  
+
   useFrame((state) => {
     if (meshRef.current) {
       meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * speed) * 0.2
@@ -135,7 +135,7 @@ const Gear3D = ({ position, speed }) => {
 // 3D Scene Component with IT Elements - Simplified
 const Scene3D = () => {
   return (
-    <Canvas 
+    <Canvas
       camera={{ position: [0, 0, 6], fov: 75 }}
       gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
       dpr={[1, 1.5]}
@@ -143,11 +143,11 @@ const Scene3D = () => {
       <ambientLight intensity={0.6} />
       <pointLight position={[10, 10, 10]} intensity={1} />
       <pointLight position={[-10, -10, -10]} intensity={0.5} color="#8b5cf6" />
-      
+
       {/* Circuit Lines */}
       <CircuitLine position={[-3, -1.5, 0]} speed={1} />
       <CircuitLine position={[3, 2, -1]} speed={1.3} />
-      
+
       {/* Gears */}
       <Gear3D position={[-2.5, 2.5, 0]} speed={1.4} />
       <Gear3D position={[2, -2.5, 1]} speed={1} />
@@ -160,7 +160,7 @@ const Scene3D = () => {
 const Hero = () => {
   const { isDark } = useTheme()
   const [aboutData, setAboutData] = useState(null)
-  
+
   useEffect(() => {
     const fetchAboutData = async () => {
       try {
@@ -175,7 +175,7 @@ const Hero = () => {
     }
     fetchAboutData()
   }, [])
-  
+
   const socialLinks = [
     { icon: Github, href: aboutData?.github_url || 'https://github.com', label: 'GitHub' },
     { icon: Linkedin, href: aboutData?.linkedin_url || 'https://linkedin.com', label: 'LinkedIn' },
@@ -193,11 +193,10 @@ const Hero = () => {
       </div>
 
       {/* Gradient Overlay */}
-      <div className={`absolute inset-0 z-10 ${
-        isDark 
-          ? 'bg-gradient-to-b from-[#0a0a0f]/50 via-transparent to-[#0a0a0f]' 
+      <div className={`absolute inset-0 z-10 ${isDark
+          ? 'bg-gradient-to-b from-[#0a0a0f]/50 via-transparent to-[#0a0a0f]'
           : 'bg-gradient-to-b from-white/70 via-white/30 to-white/90'
-      }`} />
+        }`} />
 
       {/* Content */}
       <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -217,7 +216,7 @@ const Hero = () => {
             >
               Hello, I'm
             </motion.p>
-            
+
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -236,7 +235,7 @@ const Hero = () => {
                 </>
               )}
             </motion.h1>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -273,11 +272,10 @@ const Hero = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.7 + index * 0.1 }}
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
-                    isDark 
-                      ? 'glass text-gray-400 hover:text-indigo-400 hover:border-indigo-400/50' 
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${isDark
+                      ? 'glass text-gray-400 hover:text-indigo-400 hover:border-indigo-400/50'
                       : 'bg-white shadow-lg border border-gray-100 text-gray-500 hover:text-indigo-600'
-                  }`}
+                    }`}
                 >
                   <social.icon size={22} />
                 </motion.a>
@@ -303,11 +301,10 @@ const Hero = () => {
                 href="#projects"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`px-8 py-4 rounded-xl font-medium transition-colors ${
-                  isDark 
-                    ? 'glass text-white hover:border-indigo-400/50' 
+                className={`px-8 py-4 rounded-xl font-medium transition-colors ${isDark
+                    ? 'glass text-white hover:border-indigo-400/50'
                     : 'bg-white shadow-lg border border-gray-100 text-gray-700 hover:text-indigo-600'
-                }`}
+                  }`}
               >
                 View Projects
               </motion.a>
@@ -326,11 +323,10 @@ const Hero = () => {
                 rel="noopener noreferrer"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors ${
-                  isDark 
-                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30' 
+                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors ${isDark
+                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30'
                     : 'bg-emerald-50 text-emerald-600 border border-emerald-200 hover:bg-emerald-100'
-                }`}
+                  }`}
               >
                 <Eye size={18} />
                 View CV
@@ -340,11 +336,10 @@ const Hero = () => {
                 download="Kevin_Syonin_CV.pdf"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors ${
-                  isDark 
-                    ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30' 
+                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-colors ${isDark
+                    ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30'
                     : 'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100'
-                }`}
+                  }`}
               >
                 <FileDown size={18} />
                 Download CV
@@ -416,14 +411,14 @@ const Hero = () => {
                 strokeDasharray="10 10"
               />
             </motion.svg>
-            
+
             {/* Profile Container - Organic Shape */}
             <div className="relative w-64 h-64 md:w-80 md:h-80 z-10">
               {/* Glow Effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-[60%_40%_30%_70%/60%_30%_70%_40%] blur-2xl opacity-40 animate-pulse" />
-              
+
               {/* Profile Image with creative border */}
-              <div 
+              <div
                 className="relative w-full h-full overflow-hidden shadow-2xl"
                 style={{
                   borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%',
@@ -431,9 +426,9 @@ const Hero = () => {
                   background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2))',
                 }}
               >
-                <img 
-                  src={profileImg} 
-                  alt="Kevin Syonin" 
+                <img
+                  src={profileImg}
+                  alt="Kevin Syonin"
                   className="w-full h-full object-cover"
                   style={{
                     borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%',
@@ -484,7 +479,7 @@ const Hero = () => {
 
               <motion.div
                 animate={{ y: [0, 8, 0], rotate: 360 }}
-                transition={{ 
+                transition={{
                   y: { duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1.2 },
                   rotate: { duration: 8, repeat: Infinity, ease: "linear" }
                 }}
@@ -500,7 +495,7 @@ const Hero = () => {
               >
                 <Layers className="text-white" size={14} />
               </motion.div>
-              
+
               {/* Floating Badge */}
               <motion.div
                 animate={{ y: [0, -8, 0] }}

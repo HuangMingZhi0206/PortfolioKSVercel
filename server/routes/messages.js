@@ -1,5 +1,5 @@
 import express from 'express'
-import { pool } from '../config/database.js'
+import { dbAll, dbRun, dbGet } from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
 
 const router = express.Router()
@@ -7,7 +7,7 @@ const router = express.Router()
 // Get all messages (admin only)
 router.get('/', authenticateToken, async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM contact_messages ORDER BY created_at DESC')
+    const rows = await dbAll('SELECT * FROM contact_messages ORDER BY created_at DESC', [])
     res.json(rows)
   } catch (error) {
     console.error('Get messages error:', error)
@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Name, email, and message are required' })
     }
 
-    await pool.query(
+    await dbRun(
       'INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)',
       [name, email, subject, message]
     )
@@ -40,7 +40,7 @@ router.post('/', async (req, res) => {
 router.put('/:id/read', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params
-    await pool.query('UPDATE contact_messages SET is_read = TRUE WHERE id = ?', [id])
+    await dbRun('UPDATE contact_messages SET is_read = 1 WHERE id = ?', [id])
     res.json({ message: 'Message marked as read' })
   } catch (error) {
     console.error('Mark read error:', error)
@@ -52,7 +52,7 @@ router.put('/:id/read', authenticateToken, async (req, res) => {
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params
-    await pool.query('DELETE FROM contact_messages WHERE id = ?', [id])
+    await dbRun('DELETE FROM contact_messages WHERE id = ?', [id])
     res.json({ message: 'Message deleted successfully' })
   } catch (error) {
     console.error('Delete message error:', error)
@@ -63,8 +63,8 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 // Get unread count (admin only)
 router.get('/unread-count', authenticateToken, async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT COUNT(*) as count FROM contact_messages WHERE is_read = FALSE')
-    res.json({ count: rows[0].count })
+    const row = await dbGet('SELECT COUNT(*) as count FROM contact_messages WHERE is_read = 0', [])
+    res.json({ count: row.count })
   } catch (error) {
     console.error('Get unread count error:', error)
     res.status(500).json({ error: 'Server error' })

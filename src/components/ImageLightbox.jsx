@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight, Download } from 'lucide-react'
 
+import { MEDIA_BASE_URL } from '../config/api'
+
 const ImageLightbox = ({ images, initialIndex = 0, isOpen, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
 
@@ -72,7 +74,7 @@ const ImageLightbox = ({ images, initialIndex = 0, isOpen, onClose }) => {
 
           {/* Download Button */}
           <a
-            href={`http://localhost:5000${currentImage.file_path}`}
+            href={`${MEDIA_BASE_URL}${currentImage.file_path}`}
             download
             target="_blank"
             rel="noopener noreferrer"
@@ -118,11 +120,11 @@ const ImageLightbox = ({ images, initialIndex = 0, isOpen, onClose }) => {
             className="max-w-[90vw] max-h-[85vh] flex flex-col items-center"
           >
             <img
-              src={`http://localhost:5000${currentImage.file_path}`}
+              src={`${MEDIA_BASE_URL}${currentImage.file_path}`}
               alt={currentImage.title || 'Image'}
               className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl"
             />
-            
+
             {/* Image Title */}
             {currentImage.title && (
               <p className="mt-4 text-white text-center text-lg font-medium">
@@ -138,14 +140,13 @@ const ImageLightbox = ({ images, initialIndex = 0, isOpen, onClose }) => {
                 <button
                   key={img.id}
                   onClick={() => setCurrentIndex(index)}
-                  className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
-                    index === currentIndex
+                  className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${index === currentIndex
                       ? 'border-white scale-110'
                       : 'border-transparent opacity-50 hover:opacity-100'
-                  }`}
+                    }`}
                 >
                   <img
-                    src={`http://localhost:5000${img.file_path}`}
+                    src={`${MEDIA_BASE_URL}${img.file_path}`}
                     alt={img.title || `Thumbnail ${index + 1}`}
                     className="w-full h-full object-cover"
                   />

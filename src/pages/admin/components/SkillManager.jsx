@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Edit2, Trash2, X, Save, Code2 } from 'lucide-react'
+import { API_URL } from '../../../config/api'
 
 const SkillManager = () => {
   const [skills, setSkills] = useState([])
@@ -17,7 +18,6 @@ const SkillManager = () => {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
 
-  const API_URL = 'http://localhost:5000/api'
   const token = localStorage.getItem('admin_token')
 
   const categories = ['Programming', 'Hardware', 'Technology', 'Networking', 'Robotics', 'Language', 'Soft Skills', 'IT', 'Creative', 'Domain', 'General', 'Other']

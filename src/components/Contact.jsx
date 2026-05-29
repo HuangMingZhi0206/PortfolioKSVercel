@@ -4,7 +4,7 @@ import Tilt from 'react-parallax-tilt'
 import { Mail, Phone, MapPin, Send, Linkedin, Github, Instagram, MessageCircle } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 
-const API_URL = 'http://localhost:5000/api'
+import { API_URL } from '../config/api'
 
 const Contact = () => {
   const ref = useRef(null)
@@ -36,7 +36,7 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setSubmitStatus({ loading: true, success: false, error: null })
-    
+
     try {
       const response = await fetch(`${API_URL}/messages`, {
         method: 'POST',
@@ -45,7 +45,7 @@ const Contact = () => {
         },
         body: JSON.stringify(formData)
       })
-      
+
       if (response.ok) {
         setSubmitStatus({ loading: false, success: true, error: null })
         setFormData({ name: '', email: '', subject: '', message: '' })
@@ -135,7 +135,7 @@ const Contact = () => {
             Get In <span className="gradient-text">Touch</span>
           </h2>
           <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-            Open to collaborations, project partnerships, and opportunities in 
+            Open to collaborations, project partnerships, and opportunities in
             Product Development, Robotics Engineering, IoT Solutions, and Technology Innovation.
           </p>
         </motion.div>
@@ -148,7 +148,7 @@ const Contact = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <h3 className={`text-2xl font-bold mb-8 ${isDark ? 'text-white' : 'text-gray-900'}`}>Let's Connect</h3>
-            
+
             {/* Contact Cards */}
             <div className="space-y-4 mb-8">
               {contactInfo.map((info, index) => (
@@ -167,10 +167,9 @@ const Contact = () => {
                     glareMaxOpacity={0.1}
                     glareColor={info.color}
                   >
-                    <div className={`rounded-2xl p-4 card-hover flex items-center gap-4 transition-colors ${
-                      isDark ? 'glass' : 'bg-white shadow-lg border border-gray-100'
-                    }`}>
-                      <div 
+                    <div className={`rounded-2xl p-4 card-hover flex items-center gap-4 transition-colors ${isDark ? 'glass' : 'bg-white shadow-lg border border-gray-100'
+                      }`}>
+                      <div
                         className="w-12 h-12 rounded-xl flex items-center justify-center"
                         style={{ backgroundColor: `${info.color}20` }}
                       >
@@ -201,9 +200,8 @@ const Contact = () => {
                     transition={{ duration: 0.4, delay: 0.5 + index * 0.1 }}
                     whileHover={{ scale: 1.1, y: -5 }}
                     whileTap={{ scale: 0.9 }}
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${
-                      isDark ? 'glass text-gray-400 hover:text-white' : 'bg-white shadow-lg border border-gray-100 text-gray-500 hover:text-indigo-600'
-                    }`}
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${isDark ? 'glass text-gray-400 hover:text-white' : 'bg-white shadow-lg border border-gray-100 text-gray-500 hover:text-indigo-600'
+                      }`}
                     style={{ '--hover-color': social.color }}
                   >
                     <social.icon size={22} />
@@ -217,13 +215,12 @@ const Contact = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.7 }}
-              className={`mt-12 p-6 rounded-2xl transition-colors ${
-                isDark ? 'glass' : 'bg-white shadow-lg border border-gray-100'
-              }`}
+              className={`mt-12 p-6 rounded-2xl transition-colors ${isDark ? 'glass' : 'bg-white shadow-lg border border-gray-100'
+                }`}
             >
               <h4 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Let's build the future together!</h4>
               <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>
-                Whether you have a project in mind, want to collaborate, or just want to say hi, 
+                Whether you have a project in mind, want to collaborate, or just want to say hi,
                 feel free to reach out. I'm always excited to discuss new opportunities and ideas.
               </p>
             </motion.div>
@@ -242,11 +239,10 @@ const Contact = () => {
               glareMaxOpacity={0.05}
               glareColor="#6366f1"
             >
-              <form onSubmit={handleSubmit} className={`rounded-3xl p-8 transition-colors ${
-                isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
-              }`}>
+              <form onSubmit={handleSubmit} className={`rounded-3xl p-8 transition-colors ${isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
+                }`}>
                 <h3 className={`text-2xl font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>Send a Message</h3>
-                
+
                 <div className="space-y-6">
                   {/* Name Field */}
                   <div>
@@ -260,11 +256,10 @@ const Contact = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className={`w-full px-4 py-3 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors ${
-                        isDark 
-                          ? 'bg-white/5 border border-white/10 text-white placeholder-gray-500' 
+                      className={`w-full px-4 py-3 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors ${isDark
+                          ? 'bg-white/5 border border-white/10 text-white placeholder-gray-500'
                           : 'bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400'
-                      }`}
+                        }`}
                       placeholder="John Doe"
                     />
                   </div>
@@ -281,11 +276,10 @@ const Contact = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className={`w-full px-4 py-3 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors ${
-                        isDark 
-                          ? 'bg-white/5 border border-white/10 text-white placeholder-gray-500' 
+                      className={`w-full px-4 py-3 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors ${isDark
+                          ? 'bg-white/5 border border-white/10 text-white placeholder-gray-500'
                           : 'bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400'
-                      }`}
+                        }`}
                       placeholder="john@example.com"
                     />
                   </div>
@@ -302,11 +296,10 @@ const Contact = () => {
                       value={formData.subject}
                       onChange={handleChange}
                       required
-                      className={`w-full px-4 py-3 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors ${
-                        isDark 
-                          ? 'bg-white/5 border border-white/10 text-white placeholder-gray-500' 
+                      className={`w-full px-4 py-3 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors ${isDark
+                          ? 'bg-white/5 border border-white/10 text-white placeholder-gray-500'
                           : 'bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400'
-                      }`}
+                        }`}
                       placeholder="Project Collaboration"
                     />
                   </div>
@@ -323,11 +316,10 @@ const Contact = () => {
                       onChange={handleChange}
                       required
                       rows={5}
-                      className={`w-full px-4 py-3 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors resize-none ${
-                        isDark 
-                          ? 'bg-white/5 border border-white/10 text-white placeholder-gray-500' 
+                      className={`w-full px-4 py-3 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors resize-none ${isDark
+                          ? 'bg-white/5 border border-white/10 text-white placeholder-gray-500'
                           : 'bg-gray-50 border border-gray-200 text-gray-900 placeholder-gray-400'
-                      }`}
+                        }`}
                       placeholder="Tell me about your project or idea..."
                     />
                   </div>

@@ -5,7 +5,7 @@ import Tilt from 'react-parallax-tilt'
 import { GraduationCap, MapPin, Award, Target } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 
-const API_URL = 'http://localhost:5000/api'
+import { API_URL } from '../config/api'
 
 const About = () => {
   const ref = useRef(null)
@@ -78,9 +78,8 @@ const About = () => {
               glarePosition="all"
               className="h-full"
             >
-              <div className={`rounded-3xl p-8 h-full card-hover transition-colors ${
-                isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
-              }`}>
+              <div className={`rounded-3xl p-8 h-full card-hover transition-colors ${isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
+                }`}>
                 <h3 className={`text-2xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Who I Am</h3>
                 <p className={`leading-relaxed mb-6 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                   {aboutData?.description || `I'm a passionate technology professional dedicated to developing innovative 
@@ -89,9 +88,9 @@ const About = () => {
                   while actively building real-world projects in robotics, IoT systems, and intelligent automation.`}
                 </p>
                 <p className={`leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                  I'm driven by a passion for creating transformative technology solutions that solve 
-                  real-world problems. Whether designing intelligent robotics systems, building IoT 
-                  ecosystems, or developing scalable network infrastructure, I bring dedication, 
+                  I'm driven by a passion for creating transformative technology solutions that solve
+                  real-world problems. Whether designing intelligent robotics systems, building IoT
+                  ecosystems, or developing scalable network infrastructure, I bring dedication,
                   innovation, and technical excellence to every project.
                 </p>
               </div>
@@ -113,9 +112,8 @@ const About = () => {
               glarePosition="all"
               className="h-full"
             >
-              <div className={`rounded-3xl p-8 h-full card-hover flex flex-col items-center justify-center text-center transition-colors ${
-                isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
-              }`}>
+              <div className={`rounded-3xl p-8 h-full card-hover flex flex-col items-center justify-center text-center transition-colors ${isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
+                }`}>
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center mb-4">
                   <MapPin className="text-white" size={28} />
                 </div>
@@ -143,9 +141,8 @@ const About = () => {
                 glarePosition="all"
                 className="h-full"
               >
-                <div className={`rounded-3xl p-6 h-full card-hover text-center transition-colors ${
-                  isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
-                }`}>
+                <div className={`rounded-3xl p-6 h-full card-hover text-center transition-colors ${isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
+                  }`}>
                   <div className="w-12 h-12 mx-auto rounded-xl bg-gradient-to-r from-indigo-500/20 to-purple-500/20 flex items-center justify-center mb-4">
                     <stat.icon className="text-indigo-500" size={24} />
                   </div>
@@ -171,9 +168,8 @@ const About = () => {
               glareColor="#6366f1"
               glarePosition="all"
             >
-              <div className={`rounded-3xl p-8 card-hover transition-colors ${
-                isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
-              }`}>
+              <div className={`rounded-3xl p-8 card-hover transition-colors ${isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
+                }`}>
                 <h3 className={`text-2xl font-bold mb-6 text-center ${isDark ? 'text-white' : 'text-gray-900'}`}>Expertise & Achievements</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {highlights.map((item, index) => (
@@ -182,9 +178,8 @@ const About = () => {
                       initial={{ opacity: 0, x: -20 }}
                       animate={isInView ? { opacity: 1, x: 0 } : {}}
                       transition={{ duration: 0.4, delay: 0.7 + index * 0.1 }}
-                      className={`flex items-start gap-3 p-4 rounded-xl transition-colors ${
-                        isDark ? 'bg-white/5 hover:bg-white/10' : 'bg-indigo-50 hover:bg-indigo-100'
-                      }`}
+                      className={`flex items-start gap-3 p-4 rounded-xl transition-colors ${isDark ? 'bg-white/5 hover:bg-white/10' : 'bg-indigo-50 hover:bg-indigo-100'
+                        }`}
                     >
                       <div className="text-indigo-500 mt-1">✓</div>
                       <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{item}</span>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Save, Upload, User, Mail, Phone, MapPin, Linkedin, Github, Instagram, FileText } from 'lucide-react'
+import { API_URL, API_BASE_URL } from '../../../config/api'
 
 const AboutManager = () => {
   const [formData, setFormData] = useState({
@@ -20,7 +21,6 @@ const AboutManager = () => {
   const [message, setMessage] = useState({ type: '', text: '' })
   const [profileImage, setProfileImage] = useState(null)
 
-  const API_URL = 'http://localhost:5000/api'
   const token = localStorage.getItem('admin_token')
 
   const fetchAbout = async () => {
@@ -140,7 +140,7 @@ const AboutManager = () => {
             <div className="w-32 h-32 rounded-2xl bg-gray-700 overflow-hidden">
               {profileImage ? (
                 <img 
-                  src={`http://localhost:5000${profileImage}`} 
+                  src={`${API_BASE_URL}${profileImage}`} 
                   alt="Profile" 
                   className="w-full h-full object-cover"
                 />

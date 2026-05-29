@@ -1,56 +1,44 @@
 import multer from 'multer'
-import path from 'path'
-import { fileURLToPath } from 'url'
-import fs from 'fs'
+import { v2 as cloudinary } from 'cloudinary'
+import { CloudinaryStorage } from 'multer-storage-cloudinary'
+import dotenv from 'dotenv'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+dotenv.config()
 
-// Create uploads directory if not exists
-const uploadDir = path.join(__dirname, '..', 'uploads')
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true })
-}
-
-// Ensure all subdirectories exist
-const subdirs = ['general', 'companies', 'experiences', 'certifications', 'projects', 'education']
-subdirs.forEach(dir => {
-  const subPath = path.join(uploadDir, dir)
-  if (!fs.existsSync(subPath)) {
-    fs.mkdirSync(subPath, { recursive: true })
-  }
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
 // Configure storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: async (req, file) => {
     // Determine folder based on route or query
-    let type = req.query.type || 'general'
+    let folder = req.query.type || 'portfolio/general'
     
     // Auto-detect folder from URL path
     if (req.originalUrl.includes('/experiences/') && req.originalUrl.includes('/upload-logo')) {
-      type = 'companies'
+      folder = 'portfolio/companies'
     } else if (req.originalUrl.includes('/experiences/') && req.originalUrl.includes('/upload-media')) {
-      type = 'experiences'
+      folder = 'portfolio/experiences'
     } else if (req.originalUrl.includes('/certifications/')) {
-      type = 'certifications'
+      folder = 'portfolio/certifications'
     } else if (req.originalUrl.includes('/projects/')) {
-      type = 'projects'
+      folder = 'portfolio/projects'
     } else if (req.originalUrl.includes('/education/')) {
-      type = 'education'
+      folder = 'portfolio/education'
     }
-    
-    const typeDir = path.join(uploadDir, type)
-    
-    if (!fs.existsSync(typeDir)) {
-      fs.mkdirSync(typeDir, { recursive: true })
+
+    return {
+      folder: folder,
+      allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp', 'pdf'],
+      // Add a unique suffix
+      public_id: Date.now() + '-' + Math.round(Math.random() * 1E9),
+      resource_type: file.mimetype === 'application/pdf' ? 'raw' : 'image'
     }
-    
-    cb(null, typeDir)
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-    cb(null, uniqueSuffix + path.extname(file.originalname))
   }
 })
 

@@ -3,7 +3,7 @@ import { useRef, useState, useEffect } from 'react'
 import { GraduationCap, Calendar, MapPin, Award } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 
-const API_URL = 'http://localhost:5000/api'
+import { API_URL, MEDIA_BASE_URL } from '../config/api'
 
 const Education = () => {
   const ref = useRef(null)
@@ -53,10 +53,10 @@ const Education = () => {
   const formatPeriod = (startDate, endDate, isCurrent) => {
     const start = new Date(startDate)
     const startYear = start.getFullYear()
-    
+
     if (isCurrent) return `${startYear} - Present`
     if (!endDate) return `${startYear}`
-    
+
     const end = new Date(endDate)
     return `${startYear} - ${end.getFullYear()}`
   }
@@ -84,7 +84,7 @@ const Education = () => {
         {/* Education Timeline */}
         <div className="relative">
           {/* Timeline Line */}
-          <div 
+          <div
             className={`absolute left-6 md:left-1/2 top-0 bottom-0 w-0.5 ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}
             style={{ transform: 'translateX(-50%)' }}
           />
@@ -94,21 +94,20 @@ const Education = () => {
             {education.map((edu, index) => {
               const color = colors[index % colors.length]
               const isLeft = index % 2 === 0
-              
+
               return (
                 <motion.div
                   key={edu.id || index}
                   initial={{ opacity: 0, x: isLeft ? -50 : 50 }}
                   animate={isInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.6, delay: 0.2 + index * 0.15 }}
-                  className={`relative flex flex-col md:flex-row items-start ${
-                    isLeft ? 'md:flex-row' : 'md:flex-row-reverse'
-                  }`}
+                  className={`relative flex flex-col md:flex-row items-start ${isLeft ? 'md:flex-row' : 'md:flex-row-reverse'
+                    }`}
                 >
                   {/* Timeline Dot */}
-                  <div 
+                  <div
                     className="absolute left-6 md:left-1/2 w-4 h-4 rounded-full transform -translate-x-1/2 z-10 border-4"
-                    style={{ 
+                    style={{
                       backgroundColor: isDark ? '#0f0f23' : '#fff',
                       borderColor: color,
                       boxShadow: `0 0 0 4px ${isDark ? '#0f0f23' : '#fff'}`
@@ -117,20 +116,19 @@ const Education = () => {
 
                   {/* Card */}
                   <div className={`ml-16 md:ml-0 w-full md:w-[calc(50%-40px)] ${isLeft ? 'md:pr-0 md:mr-auto' : 'md:pl-0 md:ml-auto'}`}>
-                    <div className={`rounded-2xl p-6 transition-all hover:scale-[1.02] ${
-                      isDark 
-                        ? 'bg-white/5 border border-white/10 hover:bg-white/[0.08]' 
+                    <div className={`rounded-2xl p-6 transition-all hover:scale-[1.02] ${isDark
+                        ? 'bg-white/5 border border-white/10 hover:bg-white/[0.08]'
                         : 'bg-white shadow-lg border border-gray-100 hover:shadow-xl'
-                    }`}>
+                      }`}>
                       {/* Header with Icon */}
                       <div className="flex items-start gap-4 mb-4">
-                        <div 
+                        <div
                           className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0 overflow-hidden"
                           style={{ backgroundColor: `${color}20` }}
                         >
                           {edu.logo ? (
-                            <img 
-                              src={edu.logo.startsWith('http') ? edu.logo : `http://localhost:5000${edu.logo}`}
+                            <img
+                              src={edu.logo.startsWith('http') ? edu.logo : `${MEDIA_BASE_URL}${edu.logo}`}
                               alt={edu.institution}
                               className="w-full h-full object-cover"
                             />

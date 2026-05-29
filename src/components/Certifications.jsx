@@ -1,7 +1,7 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef, useState, useEffect } from 'react'
 import Tilt from 'react-parallax-tilt'
-import { 
+import {
   Award, Calendar, ExternalLink, FileText, Image as ImageIcon,
   Code, Cpu, Wifi, Globe, Shield, Server, Database, Terminal,
   Bot, Cog, MessageSquare, Languages, Network, HardDrive, Wrench,
@@ -44,7 +44,7 @@ const getSkillIcon = (skillName) => {
   return skillIcons[skillName] || { icon: Cog, color: '#6b7280' }
 }
 
-const API_URL = 'http://localhost:5000/api'
+import { API_URL, MEDIA_BASE_URL } from '../config/api'
 
 const Certifications = () => {
   const ref = useRef(null)
@@ -52,7 +52,7 @@ const Certifications = () => {
   const { isDark } = useTheme()
   const [certifications, setCertifications] = useState([])
   const [selectedCert, setSelectedCert] = useState(null)
-  
+
   // Lightbox state
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxImages, setLightboxImages] = useState([])
@@ -172,23 +172,21 @@ const Certifications = () => {
                 glareColor="#fbbf24"
                 className="h-full"
               >
-                <div className={`relative rounded-3xl p-8 h-full card-hover text-center overflow-hidden transition-colors ${
-                  isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
-                }`}>
+                <div className={`relative rounded-3xl p-8 h-full card-hover text-center overflow-hidden transition-colors ${isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
+                  }`}>
                   {/* Glow Effect */}
                   <div className="absolute -top-10 -right-10 w-32 h-32 bg-yellow-500/20 rounded-full blur-3xl" />
-                  
+
                   {/* Trophy Icon */}
                   <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 mb-4">
                     <Award className="text-white" size={32} />
                   </div>
-                  
+
                   <h3 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>{award.title}</h3>
                   <p className="text-indigo-500 text-sm mb-3">{award.event}</p>
                   <p className={`text-sm mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{award.description}</p>
-                  <span className={`inline-block px-3 py-1 rounded-full text-sm ${
-                    isDark ? 'bg-white/5 text-gray-300' : 'bg-gray-100 text-gray-700'
-                  }`}>
+                  <span className={`inline-block px-3 py-1 rounded-full text-sm ${isDark ? 'bg-white/5 text-gray-300' : 'bg-gray-100 text-gray-700'
+                    }`}>
                     {award.year}
                   </span>
                 </div>
@@ -226,43 +224,41 @@ const Certifications = () => {
                 glareColor={colors[index % colors.length]}
                 className="h-full"
               >
-                <div className={`rounded-3xl p-6 h-full card-hover transition-colors ${
-                  isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
-                }`}>
+                <div className={`rounded-3xl p-6 h-full card-hover transition-colors ${isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
+                  }`}>
                   <div className="flex items-start gap-4">
                     {/* Icon/Image */}
-                    <div 
+                    <div
                       className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 overflow-hidden"
                       style={{ backgroundColor: `${colors[index % colors.length]}20` }}
                     >
                       {cert.image ? (
-                        <img src={cert.image.startsWith('http') ? cert.image : `http://localhost:5000${cert.image}`} alt={cert.title} className="w-full h-full object-cover" />
+                        <img src={cert.image.startsWith('http') ? cert.image : `${MEDIA_BASE_URL}${cert.image}`} alt={cert.title} className="w-full h-full object-cover" />
                       ) : (
                         icons[index % icons.length]
                       )}
                     </div>
-                    
+
                     {/* Content */}
                     <div className="flex-1">
                       <h4 className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{cert.title}</h4>
                       <p className="text-sm mb-2" style={{ color: colors[index % colors.length] }}>{cert.issuer}</p>
                       <p className={`text-sm mb-3 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{cert.description}</p>
-                      
+
                       {/* Skills */}
                       {cert.skills && cert.skills.length > 0 && (
                         <div className="flex flex-wrap gap-1.5 mb-3">
                           {cert.skills.slice(0, 4).map((skill) => {
                             const { icon: SkillIcon, color } = getSkillIcon(skill.name)
                             return (
-                              <motion.span 
+                              <motion.span
                                 key={skill.id}
                                 whileHover={{ scale: 1.05, y: -2 }}
-                                className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg cursor-default transition-all ${
-                                  isDark 
-                                    ? 'bg-white/5 hover:bg-white/10 border border-white/10' 
+                                className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg cursor-default transition-all ${isDark
+                                    ? 'bg-white/5 hover:bg-white/10 border border-white/10'
                                     : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
-                                }`}
-                                style={{ 
+                                  }`}
+                                style={{
                                   boxShadow: isDark ? `0 0 10px ${color}20` : 'none'
                                 }}
                               >
@@ -274,9 +270,8 @@ const Certifications = () => {
                             )
                           })}
                           {cert.skills.length > 4 && (
-                            <span className={`inline-flex items-center text-xs px-2 py-1 rounded-lg ${
-                              isDark ? 'bg-indigo-500/20 text-indigo-300' : 'bg-indigo-100 text-indigo-600'
-                            }`}>
+                            <span className={`inline-flex items-center text-xs px-2 py-1 rounded-lg ${isDark ? 'bg-indigo-500/20 text-indigo-300' : 'bg-indigo-100 text-indigo-600'
+                              }`}>
                               +{cert.skills.length - 4} more
                             </span>
                           )}
@@ -293,12 +288,11 @@ const Certifications = () => {
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => openLightbox(cert.media, mIndex)}
-                                className={`relative w-16 h-16 rounded-xl overflow-hidden group cursor-pointer ${
-                                  isDark ? 'ring-1 ring-white/10' : 'ring-1 ring-gray-200'
-                                }`}
+                                className={`relative w-16 h-16 rounded-xl overflow-hidden group cursor-pointer ${isDark ? 'ring-1 ring-white/10' : 'ring-1 ring-gray-200'
+                                  }`}
                               >
-                                <img 
-                                  src={`http://localhost:5000${m.file_path}`}
+                                <img
+                                  src={`${MEDIA_BASE_URL}${m.file_path}`}
                                   alt={m.title || 'Certificate'}
                                   className="w-full h-full object-cover transition-transform group-hover:scale-110"
                                 />
@@ -312,11 +306,10 @@ const Certifications = () => {
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => openLightbox(cert.media, 3)}
-                                className={`w-16 h-16 rounded-xl flex items-center justify-center cursor-pointer transition-colors ${
-                                  isDark 
-                                    ? 'bg-white/5 hover:bg-white/10 ring-1 ring-white/10' 
+                                className={`w-16 h-16 rounded-xl flex items-center justify-center cursor-pointer transition-colors ${isDark
+                                    ? 'bg-white/5 hover:bg-white/10 ring-1 ring-white/10'
                                     : 'bg-gray-100 hover:bg-gray-200 ring-1 ring-gray-200'
-                                }`}
+                                  }`}
                               >
                                 <span className={`text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                                   +{cert.media.filter(m => m.file_type?.includes('image')).length - 3}
@@ -327,14 +320,13 @@ const Certifications = () => {
                             {cert.media.filter(m => !m.file_type?.includes('image')).map((m) => (
                               <a
                                 key={m.id}
-                                href={`http://localhost:5000${m.file_path}`}
+                                href={`${MEDIA_BASE_URL}${m.file_path}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`w-16 h-16 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors ${
-                                  isDark 
-                                    ? 'bg-white/5 hover:bg-white/10 ring-1 ring-white/10' 
+                                className={`w-16 h-16 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors ${isDark
+                                    ? 'bg-white/5 hover:bg-white/10 ring-1 ring-white/10'
                                     : 'bg-gray-100 hover:bg-gray-200 ring-1 ring-gray-200'
-                                }`}
+                                  }`}
                               >
                                 <FileText size={16} className={isDark ? 'text-gray-400' : 'text-gray-500'} />
                                 <span className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
@@ -345,14 +337,14 @@ const Certifications = () => {
                           </div>
                         </div>
                       )}
-                      
+
                       <div className="flex items-center justify-between">
                         <div className={`flex items-center gap-1 text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
                           <Calendar size={12} />
                           {cert.issue_date ? new Date(cert.issue_date).getFullYear() : 'N/A'}
                         </div>
                         {cert.credential_url && (
-                          <a 
+                          <a
                             href={cert.credential_url}
                             target="_blank"
                             rel="noopener noreferrer"

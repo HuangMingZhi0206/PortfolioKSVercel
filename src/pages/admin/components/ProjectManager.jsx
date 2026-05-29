@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Edit2, Trash2, X, Save, FolderOpen, ExternalLink, Github, Star, Upload, Image, Calendar } from 'lucide-react'
+import { API_URL, API_BASE_URL } from '../../../config/api'
 
 const ProjectManager = () => {
   const [projects, setProjects] = useState([])
@@ -29,7 +30,6 @@ const ProjectManager = () => {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
 
-  const API_URL = 'http://localhost:5000/api'
   const token = localStorage.getItem('admin_token')
 
   const categories = ['Web', 'Mobile', 'IoT', 'Robotics', 'AI/ML', 'Desktop', 'Game', 'Other']
@@ -363,13 +363,13 @@ const ProjectManager = () => {
               <div className="relative h-40 bg-gray-700">
                 {project.media && project.media.length > 0 ? (
                   <img
-                    src={`http://localhost:5000${project.media[0].media_url}`}
+                    src={`${API_BASE_URL}${project.media[0].media_url}`}
                     alt={project.title}
                     className="w-full h-full object-cover"
                   />
                 ) : project.image ? (
                   <img
-                    src={`http://localhost:5000${project.image}`}
+                    src={`${API_BASE_URL}${project.image}`}
                     alt={project.title}
                     className="w-full h-full object-cover"
                   />
@@ -593,7 +593,7 @@ const ProjectManager = () => {
                           <div key={media.id} className="relative group">
                             <div className="w-20 h-20 bg-gray-800 border border-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
                               <img 
-                                src={`http://localhost:5000${media.media_url}`} 
+                                src={`${API_BASE_URL}${media.media_url}`} 
                                 alt={media.caption || ''} 
                                 className="w-full h-full object-cover" 
                               />

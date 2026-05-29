@@ -2,14 +2,14 @@ import { motion, useInView } from 'framer-motion'
 import { useRef, useState, useEffect } from 'react'
 import Tilt from 'react-parallax-tilt'
 import { useTheme } from '../context/ThemeContext'
-import { 
+import {
   Code, Cpu, Wifi, Globe, Shield, Server, Database, Terminal,
   Bot, Cog, MessageSquare, Languages, Network, HardDrive, Wrench,
   Lightbulb, Zap, Radio, Settings, Layers, BrainCircuit, Palette,
   FileCode, Microscope, Router, Cloud, Lock
 } from 'lucide-react'
 
-const API_URL = 'http://localhost:5000/api'
+import { API_URL } from '../config/api'
 
 // Icon mapping for skills
 const skillIconMap = {
@@ -95,35 +95,35 @@ const Skills = () => {
   }, [])
 
   // Group skills by category
-  const skillCategories = skills.length > 0 
+  const skillCategories = skills.length > 0
     ? Object.entries(skills.reduce((acc, skill) => {
-        const cat = skill.category || 'Other'
-        if (!acc[cat]) acc[cat] = []
-        acc[cat].push({ name: skill.name, level: skill.proficiency, color: skill.color || '#6366f1' })
-        return acc
-      }, {})).map(([title, skillList]) => ({ title, skills: skillList }))
+      const cat = skill.category || 'Other'
+      if (!acc[cat]) acc[cat] = []
+      acc[cat].push({ name: skill.name, level: skill.proficiency, color: skill.color || '#6366f1' })
+      return acc
+    }, {})).map(([title, skillList]) => ({ title, skills: skillList }))
     : defaultSkillCategories
 
   const techIcons = skills.length > 0
     ? skills.slice(0, 8).map(s => {
-        const iconData = getSkillIcon(s.name)
-        return {
-          name: s.name,
-          icon: iconData.icon,
-          color: iconData.color || s.color || '#6366f1',
-          bgColor: `${iconData.color || s.color || '#6366f1'}33`
-        }
-      })
+      const iconData = getSkillIcon(s.name)
+      return {
+        name: s.name,
+        icon: iconData.icon,
+        color: iconData.color || s.color || '#6366f1',
+        bgColor: `${iconData.color || s.color || '#6366f1'}33`
+      }
+    })
     : [
-        { name: 'Python', icon: Code, color: '#3776ab', bgColor: 'rgba(55, 118, 171, 0.2)' },
-        { name: 'C++', icon: Terminal, color: '#00599C', bgColor: 'rgba(0, 89, 156, 0.2)' },
-        { name: 'JavaScript', icon: FileCode, color: '#f7df1e', bgColor: 'rgba(247, 223, 30, 0.2)' },
-        { name: 'ESP32', icon: Cpu, color: '#e7352c', bgColor: 'rgba(231, 53, 44, 0.2)' },
-        { name: 'Arduino', icon: Cpu, color: '#00979D', bgColor: 'rgba(0, 151, 157, 0.2)' },
-        { name: 'Raspberry Pi', icon: Cpu, color: '#C51A4A', bgColor: 'rgba(197, 26, 74, 0.2)' },
-        { name: 'MQTT', icon: Radio, color: '#660066', bgColor: 'rgba(102, 0, 102, 0.2)' },
-        { name: 'Robotics', icon: Bot, color: '#ff6b35', bgColor: 'rgba(255, 107, 53, 0.2)' },
-      ]
+      { name: 'Python', icon: Code, color: '#3776ab', bgColor: 'rgba(55, 118, 171, 0.2)' },
+      { name: 'C++', icon: Terminal, color: '#00599C', bgColor: 'rgba(0, 89, 156, 0.2)' },
+      { name: 'JavaScript', icon: FileCode, color: '#f7df1e', bgColor: 'rgba(247, 223, 30, 0.2)' },
+      { name: 'ESP32', icon: Cpu, color: '#e7352c', bgColor: 'rgba(231, 53, 44, 0.2)' },
+      { name: 'Arduino', icon: Cpu, color: '#00979D', bgColor: 'rgba(0, 151, 157, 0.2)' },
+      { name: 'Raspberry Pi', icon: Cpu, color: '#C51A4A', bgColor: 'rgba(197, 26, 74, 0.2)' },
+      { name: 'MQTT', icon: Radio, color: '#660066', bgColor: 'rgba(102, 0, 102, 0.2)' },
+      { name: 'Robotics', icon: Bot, color: '#ff6b35', bgColor: 'rgba(255, 107, 53, 0.2)' },
+    ]
 
   // Magnetic effect handler
   const handleMouseMove = (e) => {
@@ -131,7 +131,7 @@ const Skills = () => {
     const rect = card.getBoundingClientRect()
     const x = e.clientX - rect.left - rect.width / 2
     const y = e.clientY - rect.top - rect.height / 2
-    
+
     card.style.transform = `translate(${x * 0.1}px, ${y * 0.1}px) scale(1.05)`
   }
 
@@ -174,15 +174,14 @@ const Skills = () => {
                 transition={{ duration: 0.4, delay: 0.3 + index * 0.05 }}
                 onMouseMove={(e) => handleMouseMove(e)}
                 onMouseLeave={handleMouseLeave}
-                className={`magnetic aspect-square rounded-2xl flex flex-col items-center justify-center cursor-pointer group transition-all duration-300 ${
-                  isDark ? 'glass' : 'bg-white shadow-lg border border-gray-100'
-                }`}
-                style={{ 
+                className={`magnetic aspect-square rounded-2xl flex flex-col items-center justify-center cursor-pointer group transition-all duration-300 ${isDark ? 'glass' : 'bg-white shadow-lg border border-gray-100'
+                  }`}
+                style={{
                   boxShadow: hoveredSkill === index ? `0 0 30px ${tech.color}40` : 'none'
                 }}
                 onMouseEnter={() => setHoveredSkill(index)}
               >
-                <div 
+                <div
                   className="transition-transform group-hover:scale-110"
                   style={{ color: tech.color }}
                 >
@@ -213,9 +212,8 @@ const Skills = () => {
                 glareColor="#6366f1"
                 className="h-full"
               >
-                <div className={`rounded-3xl p-6 h-full card-hover transition-colors ${
-                  isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
-                }`}>
+                <div className={`rounded-3xl p-6 h-full card-hover transition-colors ${isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
+                  }`}>
                   <h3 className={`text-xl font-bold mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`}>{category.title}</h3>
                   <div className="space-y-6">
                     {category.skills.map((skill, skillIndex) => {
@@ -234,19 +232,19 @@ const Skills = () => {
                             </div>
                             <span className="text-indigo-500">{skill.level}%</span>
                           </div>
-                        <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}>
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={isInView ? { width: `${skill.level}%` } : {}}
-                            transition={{ duration: 1, delay: 0.6 + catIndex * 0.1 + skillIndex * 0.1 }}
-                            className="h-full rounded-full"
-                            style={{ 
-                              background: `linear-gradient(90deg, ${color}, ${color}80)`,
-                              boxShadow: `0 0 10px ${color}50`
-                            }}
-                          />
-                        </div>
-                      </motion.div>
+                          <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={isInView ? { width: `${skill.level}%` } : {}}
+                              transition={{ duration: 1, delay: 0.6 + catIndex * 0.1 + skillIndex * 0.1 }}
+                              className="h-full rounded-full"
+                              style={{
+                                background: `linear-gradient(90deg, ${color}, ${color}80)`,
+                                boxShadow: `0 0 10px ${color}50`
+                              }}
+                            />
+                          </div>
+                        </motion.div>
                       )
                     })}
                   </div>
@@ -263,9 +261,8 @@ const Skills = () => {
           transition={{ duration: 0.6, delay: 0.8 }}
           className="mt-16 text-center"
         >
-          <div className={`inline-flex items-center gap-4 rounded-full px-8 py-4 flex-wrap justify-center ${
-            isDark ? 'glass' : 'bg-white shadow-lg border border-gray-100'
-          }`}>
+          <div className={`inline-flex items-center gap-4 rounded-full px-8 py-4 flex-wrap justify-center ${isDark ? 'glass' : 'bg-white shadow-lg border border-gray-100'
+            }`}>
             <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Certifications:</span>
             <span className="text-indigo-500 font-medium">BCNE</span>
             <span className={isDark ? 'text-gray-600' : 'text-gray-300'}>•</span>
