@@ -36,7 +36,7 @@ const storage = new CloudinaryStorage({
       folder: folder,
       allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp', 'pdf'],
       // Add a unique suffix
-      public_id: Date.now() + '-' + Math.round(Math.random() * 1E9),
+      public_id: Date.now() + '-' + Math.round(Math.random() * 1E9) + (file.mimetype === 'application/pdf' ? '.pdf' : ''),
       resource_type: file.mimetype === 'application/pdf' ? 'raw' : 'image'
     }
   }
