@@ -9,7 +9,7 @@ const router = express.Router()
 router.get('/', async (req, res) => {
   try {
     const experiences = await dbAll(`
-      SELECT * FROM experiences WHERE is_active = 1 ORDER BY is_current DESC, start_date DESC
+      SELECT * FROM experiences WHERE is_active = true ORDER BY is_current DESC, start_date DESC
     `, [])
 
     // Get highlights, media, and skills for each experience

@@ -7,7 +7,7 @@ const router = express.Router()
 // Get all skills (public)
 router.get('/', async (req, res) => {
   try {
-    const rows = await dbAll('SELECT * FROM skills WHERE is_active = 1 ORDER BY category, order_index', [])
+    const rows = await dbAll('SELECT * FROM skills WHERE is_active = true ORDER BY category, order_index', [])
     res.json(rows)
   } catch (error) {
     console.error('Get skills error:', error)

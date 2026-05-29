@@ -40,7 +40,7 @@ router.post('/', async (req, res) => {
 router.put('/:id/read', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params
-    await dbRun('UPDATE contact_messages SET is_read = 1 WHERE id = ?', [id])
+    await dbRun('UPDATE contact_messages SET is_read = true WHERE id = ?', [id])
     res.json({ message: 'Message marked as read' })
   } catch (error) {
     console.error('Mark read error:', error)
@@ -63,7 +63,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 // Get unread count (admin only)
 router.get('/unread-count', authenticateToken, async (req, res) => {
   try {
-    const row = await dbGet('SELECT COUNT(*) as count FROM contact_messages WHERE is_read = 0', [])
+    const row = await dbGet('SELECT COUNT(*) as count FROM contact_messages WHERE is_read = false', [])
     res.json({ count: row.count })
   } catch (error) {
     console.error('Get unread count error:', error)

@@ -9,7 +9,7 @@ const router = express.Router()
 router.get('/', async (req, res) => {
   try {
     const rows = await dbAll(`
-      SELECT * FROM certifications WHERE is_active = 1 ORDER BY order_index, issue_date DESC
+      SELECT * FROM certifications WHERE is_active = true ORDER BY order_index, issue_date DESC
     `, [])
 
     // Get media and skills for each certification

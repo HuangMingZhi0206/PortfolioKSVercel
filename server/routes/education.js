@@ -9,7 +9,7 @@ const router = express.Router()
 router.get('/', async (req, res) => {
   try {
     const rows = await dbAll(`
-      SELECT * FROM education WHERE is_active = 1 ORDER BY is_current DESC, start_date DESC
+      SELECT * FROM education WHERE is_active = true ORDER BY is_current DESC, start_date DESC
     `, [])
     res.json(rows)
   } catch (error) {

@@ -9,7 +9,7 @@ const router = express.Router()
 router.get('/', async (req, res) => {
   try {
     const projects = await dbAll(`
-      SELECT * FROM projects WHERE is_active = 1 ORDER BY order_index, created_at DESC
+      SELECT * FROM projects WHERE is_active = true ORDER BY order_index, created_at DESC
     `, [])
 
     // Get technologies and media for each project
