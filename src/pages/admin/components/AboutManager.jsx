@@ -99,6 +99,35 @@ const AboutManager = () => {
     }
   }
 
+  const handleResumeUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    const formData = new FormData()
+    formData.append('resume', file)
+
+    try {
+      const response = await fetch(`${API_URL}/about/upload-resume`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      })
+
+      const data = await response.json()
+      
+      if (response.ok) {
+        setFormData(prev => ({ ...prev, resume_url: data.resumeUrl }))
+        setMessage({ type: 'success', text: 'Resume uploaded successfully!' })
+      } else {
+        setMessage({ type: 'error', text: data.error || 'Failed to upload resume' })
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Failed to upload resume' })
+    }
+  }
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
@@ -304,13 +333,22 @@ const AboutManager = () => {
             <div className="relative">
               <FileText className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
               <input
-                type="url"
+                type="text"
                 name="resume_url"
                 value={formData.resume_url || ''}
-                onChange={handleChange}
-                className="w-full pl-12 pr-4 py-3 bg-gray-700/50 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-indigo-500"
+                readOnly
+                className="w-full pl-12 pr-32 py-3 bg-gray-700/50 border border-gray-600 rounded-xl text-white focus:outline-none focus:border-indigo-500"
                 placeholder="Resume/CV URL"
               />
+              <label className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer bg-indigo-500/20 text-indigo-400 px-3 py-1.5 rounded-lg text-sm hover:bg-indigo-500/30 transition-colors">
+                Upload PDF
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleResumeUpload}
+                  className="hidden"
+                />
+              </label>
             </div>
           </div>
         </div>

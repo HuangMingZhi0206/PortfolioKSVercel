@@ -67,4 +67,21 @@ router.post('/upload-image', authenticateToken, upload.single('image'), async (r
   }
 })
 
+// Upload resume PDF
+router.post('/upload-resume', authenticateToken, upload.single('resume'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' })
+    }
+
+    const resumeUrl = req.file.path
+    await dbRun('UPDATE about_me SET resume_url = ? WHERE id = 1', [resumeUrl])
+
+    res.json({ message: 'Resume uploaded successfully', resumeUrl })
+  } catch (error) {
+    console.error('Upload resume error:', error)
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
 export default router
