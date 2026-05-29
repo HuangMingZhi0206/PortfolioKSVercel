@@ -17,26 +17,14 @@ const generateRandomValues = () => ({
     ['0', '0', '0', '1', '1', '1', '0', '0', '0', '1', '1', '1', '0', '0', '0'],
   ],
   floatingDots: [
-    { left: 15, top: 25, duration: 5, delay: 1 },
-    { left: 85, top: 15, duration: 6, delay: 2 },
-    { left: 45, top: 75, duration: 4.5, delay: 0.5 },
-    { left: 75, top: 35, duration: 7, delay: 3 },
-    { left: 25, top: 85, duration: 5.5, delay: 1.5 },
-    { left: 55, top: 45, duration: 6.5, delay: 2.5 },
-    { left: 35, top: 55, duration: 4, delay: 0 },
-    { left: 65, top: 65, duration: 8, delay: 4 },
-    { left: 5, top: 45, duration: 5, delay: 1 },
-    { left: 95, top: 55, duration: 6, delay: 2 },
-    { left: 20, top: 10, duration: 4.5, delay: 0.5 },
-    { left: 80, top: 90, duration: 7, delay: 3 },
-    { left: 50, top: 20, duration: 5.5, delay: 1.5 },
-    { left: 10, top: 70, duration: 6.5, delay: 2.5 },
-    { left: 90, top: 30, duration: 4, delay: 0 },
-    { left: 40, top: 60, duration: 8, delay: 4 },
-    { left: 60, top: 40, duration: 5, delay: 1 },
-    { left: 30, top: 80, duration: 6, delay: 2 },
-    { left: 70, top: 20, duration: 4.5, delay: 0.5 },
-    { left: 50, top: 50, duration: 7, delay: 3 },
+    { left: 15, top: 25, duration: 8, delay: 1 },
+    { left: 85, top: 15, duration: 9, delay: 2 },
+    { left: 45, top: 75, duration: 7.5, delay: 0.5 },
+    { left: 75, top: 35, duration: 10, delay: 3 },
+    { left: 25, top: 85, duration: 8.5, delay: 1.5 },
+    { left: 55, top: 45, duration: 9.5, delay: 2.5 },
+    { left: 35, top: 55, duration: 7, delay: 0 },
+    { left: 65, top: 65, duration: 11, delay: 4 },
   ],
 })
 
@@ -50,19 +38,14 @@ const AnimatedBackground = () => {
   
   // Floating IT-themed particles
   const particles = [
-    { Icon: Cpu, x: '10%', y: '20%', size: 20, duration: 8, delay: 0 },
-    { Icon: Code2, x: '85%', y: '15%', size: 24, duration: 10, delay: 1 },
-    { Icon: Database, x: '75%', y: '70%', size: 18, duration: 7, delay: 2 },
-    { Icon: Wifi, x: '20%', y: '80%', size: 22, duration: 9, delay: 0.5 },
-    { Icon: Binary, x: '50%', y: '10%', size: 16, duration: 11, delay: 1.5 },
-    { Icon: CircuitBoard, x: '90%', y: '45%', size: 20, duration: 8, delay: 3 },
-    { Icon: Server, x: '5%', y: '55%', size: 18, duration: 10, delay: 2.5 },
-    { Icon: Terminal, x: '40%', y: '85%', size: 20, duration: 9, delay: 1 },
-    { Icon: Cog, x: '60%', y: '35%', size: 16, duration: 12, delay: 0.8 },
+    { Icon: Cpu, x: '10%', y: '20%', size: 20, duration: 12, delay: 0 },
+    { Icon: Code2, x: '85%', y: '15%', size: 24, duration: 14, delay: 1 },
+    { Icon: Database, x: '75%', y: '70%', size: 18, duration: 11, delay: 2 },
+    { Icon: Wifi, x: '20%', y: '80%', size: 22, duration: 13, delay: 0.5 },
+    { Icon: CircuitBoard, x: '90%', y: '45%', size: 20, duration: 12, delay: 3 },
   ]
 
-  // Grid lines for tech feel
-  const gridLines = Array.from({ length: 10 }, (_, i) => i)
+  const gridLines = Array.from({ length: 5 }, (_, i) => i)
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
@@ -176,8 +159,8 @@ const AnimatedBackground = () => {
         </motion.div>
       ))}
 
-      {/* Binary Rain Effect */}
-      {Array.from({ length: 8 }).map((_, i) => (
+      {/* Binary Rain Effect - Reduced quantity */}
+      {Array.from({ length: 4 }).map((_, i) => (
         <motion.div
           key={`binary-${i}`}
           initial={{ y: -100, opacity: 0 }}

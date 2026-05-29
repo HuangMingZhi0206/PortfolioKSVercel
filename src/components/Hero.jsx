@@ -1,161 +1,12 @@
-import { useRef, Suspense, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Canvas, useFrame } from '@react-three/fiber'
-import { Text, RoundedBox } from '@react-three/drei'
-import { Github, Linkedin, Mail, Instagram, ChevronDown, Code2, Cpu, Database, Wifi, Terminal, Layers, Settings, Binary, Cog, CircuitBoard, Rocket, Lightbulb, Wrench, Monitor, FileDown, Eye } from 'lucide-react'
+import { Github, Linkedin, Mail, Instagram, ChevronDown, Code2, Cpu, Database, Wifi, Terminal, Layers, Cog, Binary, CircuitBoard, Rocket, Monitor, FileDown, Eye } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 
 import { API_URL } from '../config/api'
 
 // Use public folder for large image
 const profileImg = '/profile.png'
-
-// 3D Floating IT Icon Component
-const FloatingITIcon = ({ position, icon, color, speed, rotationSpeed = 0.01 }) => {
-  const meshRef = useRef()
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * speed) * 0.4
-      meshRef.current.rotation.y += rotationSpeed
-      meshRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.5) * 0.1
-    }
-  })
-
-  return (
-    <group ref={meshRef} position={position}>
-      <RoundedBox args={[0.8, 0.8, 0.15]} radius={0.1} smoothness={4}>
-        <meshStandardMaterial color={color} transparent opacity={0.7} />
-      </RoundedBox>
-      <Text
-        position={[0, 0, 0.1]}
-        fontSize={0.4}
-        color="white"
-        anchorX="center"
-        anchorY="middle"
-      >
-        {icon}
-      </Text>
-    </group>
-  )
-}
-
-// 3D Code Bracket
-const CodeBracket = ({ position, speed }) => {
-  const meshRef = useRef()
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * speed) * 0.3
-      meshRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.3) * 0.2
-    }
-  })
-
-  return (
-    <group ref={meshRef} position={position}>
-      <Text
-        fontSize={1.2}
-        color="#6366f1"
-        anchorX="center"
-        anchorY="middle"
-        font={undefined}
-      >
-        {'</>'}
-      </Text>
-    </group>
-  )
-}
-
-// 3D Circuit Pattern
-const CircuitLine = ({ position, speed }) => {
-  const meshRef = useRef()
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * speed) * 0.25
-      meshRef.current.rotation.x += 0.003
-    }
-  })
-
-  return (
-    <group ref={meshRef} position={position}>
-      <RoundedBox args={[1.5, 0.08, 0.08]} radius={0.02}>
-        <meshStandardMaterial color="#8b5cf6" emissive="#8b5cf6" emissiveIntensity={0.3} />
-      </RoundedBox>
-      <RoundedBox args={[0.08, 0.5, 0.08]} radius={0.02} position={[0.7, 0.25, 0]}>
-        <meshStandardMaterial color="#8b5cf6" emissive="#8b5cf6" emissiveIntensity={0.3} />
-      </RoundedBox>
-      <mesh position={[0.7, 0.5, 0]}>
-        <sphereGeometry args={[0.1, 16, 16]} />
-        <meshStandardMaterial color="#a855f7" emissive="#a855f7" emissiveIntensity={0.5} />
-      </mesh>
-    </group>
-  )
-}
-
-// 3D Binary Rain
-const BinaryText = ({ position, speed }) => {
-  const meshRef = useRef()
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * speed) * 0.5
-      meshRef.current.rotation.y += 0.005
-    }
-  })
-
-  return (
-    <group ref={meshRef} position={position}>
-      <Text fontSize={0.3} color="#22c55e" anchorX="center" anchorY="middle" position={[0, 0.3, 0]}>01</Text>
-      <Text fontSize={0.3} color="#22c55e" anchorX="center" anchorY="middle" position={[0, 0, 0]} fillOpacity={0.7}>10</Text>
-      <Text fontSize={0.3} color="#22c55e" anchorX="center" anchorY="middle" position={[0, -0.3, 0]} fillOpacity={0.5}>01</Text>
-    </group>
-  )
-}
-
-// 3D Gear/Cog
-const Gear3D = ({ position, speed }) => {
-  const meshRef = useRef()
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * speed) * 0.2
-      meshRef.current.rotation.z += 0.02
-    }
-  })
-
-  return (
-    <mesh ref={meshRef} position={position}>
-      <torusGeometry args={[0.3, 0.08, 8, 6]} />
-      <meshStandardMaterial color="#f59e0b" emissive="#f59e0b" emissiveIntensity={0.2} />
-    </mesh>
-  )
-}
-
-// 3D Scene Component with IT Elements - Simplified
-const Scene3D = () => {
-  return (
-    <Canvas
-      camera={{ position: [0, 0, 6], fov: 75 }}
-      gl={{ alpha: true, antialias: true, powerPreference: "high-performance" }}
-      dpr={[1, 1.5]}
-    >
-      <ambientLight intensity={0.6} />
-      <pointLight position={[10, 10, 10]} intensity={1} />
-      <pointLight position={[-10, -10, -10]} intensity={0.5} color="#8b5cf6" />
-
-      {/* Circuit Lines */}
-      <CircuitLine position={[-3, -1.5, 0]} speed={1} />
-      <CircuitLine position={[3, 2, -1]} speed={1.3} />
-
-      {/* Gears */}
-      <Gear3D position={[-2.5, 2.5, 0]} speed={1.4} />
-      <Gear3D position={[2, -2.5, 1]} speed={1} />
-      <Gear3D position={[-4, -1, -1]} speed={1.1} />
-      <Gear3D position={[4, 1.5, -0.5]} speed={0.9} />
-    </Canvas>
-  )
-}
 
 const Hero = () => {
   const { isDark } = useTheme()
@@ -185,11 +36,8 @@ const Hero = () => {
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* 3D Background */}
-      <div className="absolute inset-0 z-0">
-        <Suspense fallback={null}>
-          <Scene3D />
-        </Suspense>
+      {/* Background (3D removed for performance) */}
+      <div className="absolute inset-0 z-0 bg-transparent">
       </div>
 
       {/* Gradient Overlay */}
