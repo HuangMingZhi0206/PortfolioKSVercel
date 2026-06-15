@@ -1,7 +1,7 @@
 import express from 'express'
 import { dbAll, dbRun, dbGet } from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
-
+import nodemailer from 'nodemailer'
 const router = express.Router()
 
 // Get all messages (admin only)
@@ -28,6 +28,34 @@ router.post('/', async (req, res) => {
       'INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)',
       [name, email, subject, message]
     )
+
+    // Send email notification if configured
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      const transporter = nodemailer.createTransport({
+        service: 'gmail', // Use your email provider here
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS
+        }
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: process.env.EMAIL_USER, // Send notification to yourself
+        replyTo: email, // So you can directly reply to the sender
+        subject: `New Contact Form Message: ${subject || 'No Subject'}`,
+        text: `You have received a new message from your portfolio website.\n\nName: ${name}\nEmail: ${email}\nSubject: ${subject || 'N/A'}\nMessage:\n${message}`
+      };
+
+      try {
+        await transporter.sendMail(mailOptions);
+        console.log('Email notification sent successfully');
+      } catch (emailError) {
+        console.error('Failed to send email notification:', emailError);
+      }
+    } else {
+      console.log('Email notification skipped: EMAIL_USER or EMAIL_PASS not configured in .env');
+    }
 
     res.json({ message: 'Message sent successfully' })
   } catch (error) {
