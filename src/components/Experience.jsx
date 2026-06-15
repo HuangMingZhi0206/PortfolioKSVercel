@@ -140,7 +140,7 @@ const Experience = () => {
 
   return (
     <section id="experience" className="relative py-20 md:py-32 overflow-hidden" ref={ref}>
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -157,7 +157,7 @@ const Experience = () => {
         </motion.div>
 
         {/* Experience Cards - Grouped by Company */}
-        <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           {Object.values(groupedExperiences).map((group, groupIndex) => {
             const color = colors[groupIndex % colors.length]
             return (
