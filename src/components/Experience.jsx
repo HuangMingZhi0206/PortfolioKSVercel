@@ -157,7 +157,7 @@ const Experience = () => {
         </motion.div>
 
         {/* Experience Cards - Grouped by Company */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        <div className="columns-1 lg:columns-2 gap-6">
           {Object.values(groupedExperiences).map((group, groupIndex) => {
             const color = colors[groupIndex % colors.length]
             return (
@@ -166,7 +166,7 @@ const Experience = () => {
                 initial={{ opacity: 0, y: 30 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.1 + groupIndex * 0.1 }}
-                className={`rounded-2xl overflow-hidden transition-all ${isDark
+                className={`break-inside-avoid mb-6 rounded-2xl overflow-hidden transition-all ${isDark
                     ? 'bg-white/5 border border-white/10 hover:bg-white/[0.07]'
                     : 'bg-white shadow-lg border border-gray-100 hover:shadow-xl'
                   }`}
