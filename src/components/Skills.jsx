@@ -45,10 +45,63 @@ const getSkillIcon = (skillName) => {
   return skillIconMap[skillName] || { icon: Cog, color: '#6b7280' }
 }
 
+// Marquee row component for infinite scrolling
+const MarqueeRow = ({ items, direction = 'left', speed = 30, isDark }) => {
+  // Duplicate items enough times to fill the screen and create seamless loop
+  const duplicated = [...items, ...items, ...items, ...items]
+
+  return (
+    <div className="overflow-hidden relative group">
+      {/* Fade edges */}
+      <div className={`absolute left-0 top-0 bottom-0 w-20 z-10 pointer-events-none ${isDark ? 'bg-gradient-to-r from-[#0a0a1a] to-transparent' : 'bg-gradient-to-r from-gray-50 to-transparent'}`} />
+      <div className={`absolute right-0 top-0 bottom-0 w-20 z-10 pointer-events-none ${isDark ? 'bg-gradient-to-l from-[#0a0a1a] to-transparent' : 'bg-gradient-to-l from-gray-50 to-transparent'}`} />
+
+      <div
+        className="flex gap-4 py-3 group-hover:[animation-play-state:paused]"
+        style={{
+          animation: `${direction === 'left' ? 'marqueeLeft' : 'marqueeRight'} ${speed}s linear infinite`,
+          width: 'max-content',
+        }}
+      >
+        {duplicated.map((tech, index) => {
+          const IconComponent = tech.icon
+          return (
+            <div
+              key={`${tech.name}-${index}`}
+              className={`flex items-center gap-3 px-5 py-3 rounded-xl shrink-0 cursor-default transition-all duration-300 hover:scale-105 ${isDark
+                  ? 'bg-white/[0.05] border border-white/[0.08] hover:bg-white/[0.1] hover:border-white/20'
+                  : 'bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300'
+                }`}
+              style={{
+                '--glow-color': tech.color,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = `0 0 20px ${tech.color}30`
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = 'none'
+              }}
+            >
+              <div
+                className="w-9 h-9 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: `${tech.color}18` }}
+              >
+                <IconComponent size={20} style={{ color: tech.color }} strokeWidth={1.8} />
+              </div>
+              <span className={`text-sm font-medium whitespace-nowrap ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                {tech.name}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 const Skills = () => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
-  const [hoveredSkill, setHoveredSkill] = useState(null)
   const { isDark } = useTheme()
   const [skills, setSkills] = useState([])
 
@@ -104,43 +157,50 @@ const Skills = () => {
     }, {})).map(([title, skillList]) => ({ title, skills: skillList }))
     : defaultSkillCategories
 
-  const techIcons = skills.length > 0
-    ? skills.slice(0, 8).map(s => {
+  // Build all tech icons from skills for marquee
+  const allTechIcons = skills.length > 0
+    ? skills.map(s => {
       const iconData = getSkillIcon(s.name)
       return {
         name: s.name,
         icon: iconData.icon,
         color: iconData.color || s.color || '#6366f1',
-        bgColor: `${iconData.color || s.color || '#6366f1'}33`
       }
     })
     : [
-      { name: 'Python', icon: Code, color: '#3776ab', bgColor: 'rgba(55, 118, 171, 0.2)' },
-      { name: 'C++', icon: Terminal, color: '#00599C', bgColor: 'rgba(0, 89, 156, 0.2)' },
-      { name: 'JavaScript', icon: FileCode, color: '#f7df1e', bgColor: 'rgba(247, 223, 30, 0.2)' },
-      { name: 'ESP32', icon: Cpu, color: '#e7352c', bgColor: 'rgba(231, 53, 44, 0.2)' },
-      { name: 'Arduino', icon: Cpu, color: '#00979D', bgColor: 'rgba(0, 151, 157, 0.2)' },
-      { name: 'Raspberry Pi', icon: Cpu, color: '#C51A4A', bgColor: 'rgba(197, 26, 74, 0.2)' },
-      { name: 'MQTT', icon: Radio, color: '#660066', bgColor: 'rgba(102, 0, 102, 0.2)' },
-      { name: 'Robotics', icon: Bot, color: '#ff6b35', bgColor: 'rgba(255, 107, 53, 0.2)' },
+      { name: 'Python', icon: Code, color: '#3776ab' },
+      { name: 'C++', icon: Terminal, color: '#00599C' },
+      { name: 'JavaScript', icon: FileCode, color: '#f7df1e' },
+      { name: 'ESP32', icon: Cpu, color: '#e7352c' },
+      { name: 'Arduino', icon: Cpu, color: '#00979D' },
+      { name: 'Raspberry Pi', icon: Cpu, color: '#C51A4A' },
+      { name: 'MQTT', icon: Radio, color: '#660066' },
+      { name: 'Robotics', icon: Bot, color: '#ff6b35' },
+      { name: 'IoT', icon: Wifi, color: '#00b4d8' },
+      { name: 'Networking', icon: Globe, color: '#0ea5e9' },
+      { name: 'Network Security', icon: Shield, color: '#22c55e' },
+      { name: 'Back-End', icon: Server, color: '#6366f1' },
     ]
 
-  // Magnetic effect handler
-  const handleMouseMove = (e) => {
-    const card = e.currentTarget
-    const rect = card.getBoundingClientRect()
-    const x = e.clientX - rect.left - rect.width / 2
-    const y = e.clientY - rect.top - rect.height / 2
-
-    card.style.transform = `translate(${x * 0.1}px, ${y * 0.1}px) scale(1.05)`
-  }
-
-  const handleMouseLeave = (e) => {
-    e.currentTarget.style.transform = 'translate(0px, 0px) scale(1)'
-  }
+  // Split icons into two rows
+  const mid = Math.ceil(allTechIcons.length / 2)
+  const row1 = allTechIcons.slice(0, mid)
+  const row2 = allTechIcons.slice(mid)
 
   return (
     <section id="skills" className="relative py-20 md:py-32 overflow-hidden" ref={ref}>
+      {/* Marquee CSS Keyframes */}
+      <style>{`
+        @keyframes marqueeLeft {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes marqueeRight {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+      `}</style>
+
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -157,42 +217,15 @@ const Skills = () => {
           </p>
         </motion.div>
 
-        {/* Floating Tech Icons Grid */}
+        {/* Scrolling Tech Icons Marquee */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-4 md:grid-cols-8 gap-4 mb-16"
+          className="mb-16 space-y-4"
         >
-          {techIcons.map((tech, index) => {
-            const IconComponent = tech.icon
-            return (
-              <motion.div
-                key={tech.name}
-                initial={{ opacity: 0, scale: 0 }}
-                animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.4, delay: 0.3 + index * 0.05 }}
-                onMouseMove={(e) => handleMouseMove(e)}
-                onMouseLeave={handleMouseLeave}
-                className={`magnetic aspect-square rounded-2xl flex flex-col items-center justify-center cursor-pointer group transition-all duration-300 ${isDark ? 'glass' : 'bg-white shadow-lg border border-gray-100'
-                  }`}
-                style={{
-                  boxShadow: hoveredSkill === index ? `0 0 30px ${tech.color}40` : 'none'
-                }}
-                onMouseEnter={() => setHoveredSkill(index)}
-              >
-                <div
-                  className="transition-transform group-hover:scale-110"
-                  style={{ color: tech.color }}
-                >
-                  <IconComponent size={36} strokeWidth={1.5} />
-                </div>
-                <span className={`text-xs mt-2 text-center px-1 opacity-0 group-hover:opacity-100 transition-opacity ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                  {tech.name.length > 12 ? tech.name.substring(0, 10) + '...' : tech.name}
-                </span>
-              </motion.div>
-            )
-          })}
+          <MarqueeRow items={row1} direction="left" speed={35} isDark={isDark} />
+          <MarqueeRow items={row2} direction="right" speed={40} isDark={isDark} />
         </motion.div>
 
         {/* Skill Categories */}
