@@ -44,10 +44,7 @@ const MarqueeRow = ({ items, direction = 'left', speed = 30, isDark }) => {
   const duplicated = [...items, ...items, ...items, ...items]
 
   return (
-    <div className="overflow-hidden relative group">
-      {/* Fade edges */}
-      <div className={`absolute left-0 top-0 bottom-0 w-20 z-10 pointer-events-none ${isDark ? 'bg-gradient-to-r from-[#0a0a1a] to-transparent' : 'bg-gradient-to-r from-gray-50 to-transparent'}`} />
-      <div className={`absolute right-0 top-0 bottom-0 w-20 z-10 pointer-events-none ${isDark ? 'bg-gradient-to-l from-[#0a0a1a] to-transparent' : 'bg-gradient-to-l from-gray-50 to-transparent'}`} />
+    <div className="overflow-hidden relative group w-full">
 
       <div
         className="flex gap-5 py-3 group-hover:[animation-play-state:paused]"
@@ -157,8 +154,8 @@ const Skills = () => {
         }
       `}</style>
 
+      {/* Section Header - contained */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -172,19 +169,21 @@ const Skills = () => {
             Technologies and tools I use to bring ideas to life
           </p>
         </motion.div>
+      </div>
 
-        {/* Scrolling Tech Icons Marquee */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="space-y-5"
-        >
-          <MarqueeRow items={row1} direction="left" speed={35} isDark={isDark} />
-          <MarqueeRow items={row2} direction="right" speed={40} isDark={isDark} />
-        </motion.div>
+      {/* Scrolling Tech Icons Marquee - FULL WIDTH */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="space-y-5 w-full"
+      >
+        <MarqueeRow items={row1} direction="left" speed={35} isDark={isDark} />
+        <MarqueeRow items={row2} direction="right" speed={40} isDark={isDark} />
+      </motion.div>
 
-        {/* Certifications Preview */}
+      {/* Certifications Preview - contained */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
