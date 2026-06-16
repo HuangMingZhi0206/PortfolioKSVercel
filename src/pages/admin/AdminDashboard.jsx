@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../../context/AuthContext'
 import { API_URL, API_BASE_URL } from '../../config/api'
 import { 
-  LayoutDashboard, User, Briefcase, FolderOpen, Award, GraduationCap, 
+  LayoutDashboard, User, Briefcase, FolderOpen, Award, 
   MessageSquare, Settings, LogOut, Menu, X, ChevronRight, Bell,
   Code2, TrendingUp, Eye
 } from 'lucide-react'
@@ -14,7 +14,6 @@ import AboutManager from './components/AboutManager'
 import ExperienceManager from './components/ExperienceManager'
 import ProjectManager from './components/ProjectManager'
 import CertificationManager from './components/CertificationManager'
-import EducationManager from './components/EducationManager'
 import SkillManager from './components/SkillManager'
 import MessageManager from './components/MessageManager'
 
@@ -48,7 +47,6 @@ const AdminDashboard = () => {
     { id: 'experience', label: 'Experience', icon: Briefcase },
     { id: 'projects', label: 'Projects', icon: FolderOpen },
     { id: 'certifications', label: 'Certifications', icon: Award },
-    { id: 'education', label: 'Education', icon: GraduationCap },
     { id: 'skills', label: 'Skills', icon: Code2 },
     { id: 'messages', label: 'Messages', icon: MessageSquare, badge: stats?.unreadMessages },
   ]
@@ -65,8 +63,6 @@ const AdminDashboard = () => {
         return <ProjectManager />
       case 'certifications':
         return <CertificationManager />
-      case 'education':
-        return <EducationManager />
       case 'skills':
         return <SkillManager />
       case 'messages':
@@ -82,7 +78,7 @@ const AdminDashboard = () => {
       <motion.aside
         initial={{ x: -280 }}
         animate={{ x: sidebarOpen ? 0 : -280 }}
-        className="fixed lg:relative z-30 w-72 h-screen bg-gray-950 border-r border-gray-800 flex flex-col"
+        className="fixed lg:sticky lg:top-0 z-30 w-72 h-screen bg-gray-950 border-r border-gray-800 flex flex-col overflow-y-auto"
       >
         {/* Logo */}
         <div className="p-6 border-b border-gray-800">
