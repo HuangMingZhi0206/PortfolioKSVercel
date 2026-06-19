@@ -4,15 +4,32 @@ import { useTheme } from '../context/ThemeContext'
 import {
   Code, Cpu, Wifi, Globe, Shield, Server, Terminal,
   Bot, Cog, MessageSquare, Languages, Network, HardDrive, Wrench,
-  Lightbulb, Zap, Radio, Settings, BrainCircuit, Palette,
-  FileCode, Microscope, Router, Users, Flag, Rocket,
+  Lightbulb, Zap, Radio, BrainCircuit, Palette,
+  FileCode, Microscope, Router, Flag, Rocket,
   MonitorSmartphone, ClipboardList
 } from 'lucide-react'
 
 import { API_URL } from '../config/api'
 
-// Icon mapping with appropriate Lucide icons for each skill
-const skillIconMap = {
+// CDN logo URLs for tech brands (devicon = most reliable)
+const skillLogoUrls = {
+  'Python': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg',
+  'C++': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg',
+  'JavaScript': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg',
+  'Arduino': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/arduino/arduino-original.svg',
+  'Raspberry Pi': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/raspberrypi/raspberrypi-original.svg',
+  'ESP32': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/embeddedc/embeddedc-original.svg',
+  'MQTT': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mosquitto/mosquitto-original.svg',
+  'Back-End Development': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg',
+  'System Administration': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/linux/linux-original.svg',
+  'Network Engineering': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/networkx/networkx-original.svg',
+  'Networking': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/networkx/networkx-original.svg',
+  'Network Administration': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/networkx/networkx-original.svg',
+  'Graphic Design': 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/canva/canva-original.svg',
+}
+
+// Lucide fallback icons for skills without brand logos
+const skillFallbackMap = {
   'Python': { icon: Code, color: '#3776AB' },
   'C++': { icon: Terminal, color: '#00599C' },
   'JavaScript': { icon: FileCode, color: '#F7DF1E' },
@@ -42,8 +59,30 @@ const skillIconMap = {
   'Information Technology Infrastructure': { icon: HardDrive, color: '#64748B' },
 }
 
-const getSkillIcon = (skillName) => {
-  return skillIconMap[skillName] || { icon: Cog, color: '#6b7280' }
+const getSkillData = (skillName) => {
+  const fallback = skillFallbackMap[skillName] || { icon: Cog, color: '#6b7280' }
+  const logo = skillLogoUrls[skillName] || null
+  return { ...fallback, logo }
+}
+
+// Skill icon component with CDN logo + Lucide fallback
+const SkillIcon = ({ logo, FallbackIcon, color, size = 24 }) => {
+  const [imgError, setImgError] = useState(false)
+
+  if (logo && !imgError) {
+    return (
+      <img
+        src={logo}
+        alt=""
+        className="object-contain"
+        style={{ width: size, height: size }}
+        loading="lazy"
+        onError={() => setImgError(true)}
+      />
+    )
+  }
+
+  return <FallbackIcon size={size} style={{ color }} strokeWidth={1.8} />
 }
 
 // Marquee row component for infinite scrolling
@@ -52,7 +91,6 @@ const MarqueeRow = ({ items, direction = 'left', speed = 30, isDark }) => {
 
   return (
     <div className="overflow-hidden relative group w-full">
-
       <div
         className="flex gap-5 py-3 group-hover:[animation-play-state:paused]"
         style={{
@@ -60,34 +98,31 @@ const MarqueeRow = ({ items, direction = 'left', speed = 30, isDark }) => {
           width: 'max-content',
         }}
       >
-        {duplicated.map((tech, index) => {
-          const IconComponent = tech.icon
-          return (
+        {duplicated.map((tech, index) => (
+          <div
+            key={`${tech.name}-${index}`}
+            className={`flex flex-col items-center gap-2 px-4 py-4 rounded-2xl shrink-0 cursor-default transition-all duration-300 hover:scale-110 min-w-[90px] ${isDark
+                ? 'bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.1] hover:border-white/20'
+                : 'bg-white border border-gray-200 shadow-sm hover:shadow-lg hover:border-gray-300'
+              }`}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = `0 0 25px ${tech.color}30`
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = 'none'
+            }}
+          >
             <div
-              key={`${tech.name}-${index}`}
-              className={`flex flex-col items-center gap-2 px-4 py-4 rounded-2xl shrink-0 cursor-default transition-all duration-300 hover:scale-110 min-w-[90px] ${isDark
-                  ? 'bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.1] hover:border-white/20'
-                  : 'bg-white border border-gray-200 shadow-sm hover:shadow-lg hover:border-gray-300'
-                }`}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = `0 0 25px ${tech.color}30`
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = 'none'
-              }}
+              className="w-10 h-10 rounded-lg flex items-center justify-center"
+              style={{ backgroundColor: `${tech.color}18` }}
             >
-              <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center"
-                style={{ backgroundColor: `${tech.color}18` }}
-              >
-                <IconComponent size={24} style={{ color: tech.color }} strokeWidth={1.8} />
-              </div>
-              <span className={`text-xs font-medium text-center whitespace-nowrap uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                {tech.name.length > 16 ? tech.name.substring(0, 14) + '...' : tech.name}
-              </span>
+              <SkillIcon logo={tech.logo} FallbackIcon={tech.icon} color={tech.color} size={24} />
             </div>
-          )
-        })}
+            <span className={`text-xs font-medium text-center whitespace-nowrap uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+              {tech.name.length > 16 ? tech.name.substring(0, 14) + '...' : tech.name}
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   )
@@ -117,26 +152,27 @@ const Skills = () => {
   // Build all tech icons from skills for marquee
   const allTechIcons = skills.length > 0
     ? skills.map(s => {
-      const iconData = getSkillIcon(s.name)
+      const data = getSkillData(s.name)
       return {
         name: s.name,
-        icon: iconData.icon,
-        color: iconData.color || s.color || '#6366f1',
+        icon: data.icon,
+        logo: data.logo,
+        color: data.color || s.color || '#6366f1',
       }
     })
     : [
-      { name: 'Python', icon: Code, color: '#3776AB' },
-      { name: 'C++', icon: Terminal, color: '#00599C' },
-      { name: 'JavaScript', icon: FileCode, color: '#F7DF1E' },
-      { name: 'ESP32', icon: Cpu, color: '#E7352C' },
-      { name: 'Arduino', icon: Cpu, color: '#00979D' },
-      { name: 'Raspberry Pi', icon: Cpu, color: '#C51A4A' },
-      { name: 'MQTT', icon: Radio, color: '#660066' },
-      { name: 'Robotics', icon: Bot, color: '#FF6B35' },
-      { name: 'IoT', icon: Wifi, color: '#41BDF5' },
-      { name: 'Networking', icon: Globe, color: '#0EA5E9' },
-      { name: 'Back-End', icon: Server, color: '#339933' },
-      { name: 'Leadership', icon: Rocket, color: '#EAB308' },
+      { name: 'Python', ...getSkillData('Python') },
+      { name: 'C++', ...getSkillData('C++') },
+      { name: 'JavaScript', ...getSkillData('JavaScript') },
+      { name: 'ESP32', ...getSkillData('ESP32') },
+      { name: 'Arduino', ...getSkillData('Arduino') },
+      { name: 'Raspberry Pi', ...getSkillData('Raspberry Pi') },
+      { name: 'MQTT', ...getSkillData('MQTT') },
+      { name: 'Robotics', ...getSkillData('Robotics') },
+      { name: 'IoT', icon: Wifi, logo: null, color: '#41BDF5' },
+      { name: 'Networking', ...getSkillData('Networking') },
+      { name: 'Back-End', ...getSkillData('Back-End Development') },
+      { name: 'Leadership', ...getSkillData('Leadership') },
     ]
 
   // Split icons into two rows
