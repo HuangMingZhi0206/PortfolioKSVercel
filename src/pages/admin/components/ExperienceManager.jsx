@@ -7,6 +7,7 @@ const ExperienceManager = () => {
   const [experiences, setExperiences] = useState([])
   const [skills, setSkills] = useState([])
   const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState('Work')
   const [showModal, setShowModal] = useState(false)
   const [showMediaModal, setShowMediaModal] = useState(false)
   const [selectedExp, setSelectedExp] = useState(null)
@@ -288,6 +289,10 @@ const ExperienceManager = () => {
     return <FileText size={16} className="text-blue-400" />
   }
 
+  const filteredExperiences = experiences.filter(exp => 
+    (exp.experience_type || 'Work') === activeTab
+  )
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -313,17 +318,42 @@ const ExperienceManager = () => {
         </motion.div>
       )}
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Header & Tabs */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-white">Work Experience</h3>
-          <p className="text-gray-500 text-sm">Manage experience with skills & media</p>
+          <h3 className="text-lg font-semibold text-white">Experience Manager</h3>
+          <p className="text-gray-500 text-sm">Manage work and organization experience</p>
         </div>
+        
+        {/* Tab Switcher */}
+        <div className="flex bg-gray-800/50 p-1 rounded-xl border border-gray-700 w-fit">
+          <button
+            onClick={() => setActiveTab('Work')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              activeTab === 'Work' 
+                ? 'bg-indigo-500 text-white shadow-lg' 
+                : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+            }`}
+          >
+            Work
+          </button>
+          <button
+            onClick={() => setActiveTab('Organization')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              activeTab === 'Organization' 
+                ? 'bg-indigo-500 text-white shadow-lg' 
+                : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+            }`}
+          >
+            Organization
+          </button>
+        </div>
+
         <motion.button
           onClick={() => openModal()}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-xl hover:bg-indigo-600 transition-colors"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-xl hover:bg-indigo-600 transition-colors"
         >
           <Plus size={20} />
           Add Experience
@@ -332,12 +362,12 @@ const ExperienceManager = () => {
 
       {/* Experience List */}
       <div className="space-y-4">
-        {experiences.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            No experiences added yet. Click "Add Experience" to get started.
+        {filteredExperiences.length === 0 ? (
+          <div className="text-center py-12 text-gray-500 border border-dashed border-gray-700 rounded-xl">
+            No {activeTab.toLowerCase()} experiences found. Click "Add Experience" to add one.
           </div>
         ) : (
-          experiences.map((exp, index) => (
+          filteredExperiences.map((exp, index) => (
             <motion.div
               key={exp.id}
               initial={{ opacity: 0, y: 20 }}
