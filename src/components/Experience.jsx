@@ -1,6 +1,6 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef, useState, useEffect } from 'react'
-import { Briefcase, FileText, Image as ImageIcon, Diamond } from 'lucide-react'
+import { Briefcase, FileText, Diamond, Building2, Users } from 'lucide-react'
 import { useTheme } from '../context/ThemeContext'
 import ImageLightbox from './ImageLightbox'
 
@@ -11,6 +11,7 @@ const Experience = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" })
   const [expandedExp, setExpandedExp] = useState({})
   const [experiences, setExperiences] = useState([])
+  const [activeTab, setActiveTab] = useState('Work')
   const { isDark } = useTheme()
 
   // Lightbox state
@@ -37,6 +38,7 @@ const Experience = () => {
       is_current: true,
       location: 'North Cikarang, West Java, Indonesia',
       description: 'Become a Multimedia Member at Pucatso (President University Catholic Society) in 2024-2025.',
+      experience_type: 'Organization',
       skills: [{ id: 1, name: 'Communication and Public Speaking' }],
       media: []
     }
@@ -60,8 +62,13 @@ const Experience = () => {
     fetchExperiences()
   }, [])
 
-  // Group experiences by company
-  const groupedExperiences = experiences.reduce((acc, exp) => {
+  // Filter experiences by active tab
+  const filteredExperiences = experiences.filter(exp => 
+    (exp.experience_type || 'Work') === activeTab
+  )
+
+  // Group filtered experiences by company
+  const groupedExperiences = filteredExperiences.reduce((acc, exp) => {
     const company = exp.company
     if (!acc[company]) {
       acc[company] = {
@@ -146,189 +153,234 @@ const Experience = () => {
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10"
         >
           <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-            Work <span className="gradient-text">Experience</span>
+            My <span className="gradient-text">Experience</span>
           </h2>
           <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-            My professional journey in technology and leadership
+            My professional journey and organizational involvement
           </p>
         </motion.div>
 
-        {/* Experience Cards - Grouped by Company */}
-        <div className="columns-1 lg:columns-2 gap-6">
-          {Object.values(groupedExperiences).map((group, groupIndex) => {
-            const color = colors[groupIndex % colors.length]
-            return (
-              <motion.div
-                key={group.company}
-                initial={{ opacity: 0, y: 30 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: 0.1 + groupIndex * 0.1 }}
-                className={`break-inside-avoid mb-6 rounded-2xl overflow-hidden transition-all ${isDark
-                    ? 'bg-white/5 border border-white/10 hover:bg-white/[0.07]'
-                    : 'bg-white shadow-lg border border-gray-100 hover:shadow-xl'
-                  }`}
-              >
-                {/* Company Header */}
-                <div className="p-5 pb-0">
-                  <div className="flex items-start gap-4">
-                    {/* Company Logo */}
-                    <div
-                      className="w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden shrink-0"
-                      style={{ backgroundColor: `${color}15` }}
-                    >
-                      {group.company_logo ? (
-                        <img
-                          src={group.company_logo.startsWith('http') ? group.company_logo : `${MEDIA_BASE_URL}${group.company_logo}`}
-                          alt={group.company}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <Briefcase size={24} style={{ color }} />
-                      )}
-                    </div>
+        {/* Tab Switcher */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="flex justify-center mb-12"
+        >
+          <div className={`inline-flex p-1 rounded-2xl ${isDark ? 'bg-white/5 border border-white/10' : 'bg-gray-100/80 border border-gray-200'}`}>
+            <button
+              onClick={() => setActiveTab('Work')}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-all ${
+                activeTab === 'Work'
+                  ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/25'
+                  : `${isDark ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'}`
+              }`}
+            >
+              <Briefcase size={18} />
+              Work
+            </button>
+            <button
+              onClick={() => setActiveTab('Organization')}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-all ${
+                activeTab === 'Organization'
+                  ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/25'
+                  : `${isDark ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'}`
+              }`}
+            >
+              <Users size={18} />
+              Organization
+            </button>
+          </div>
+        </motion.div>
 
-                    {/* Company Info */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                        {group.company}
-                      </h3>
-                      <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {group.totalDuration}
-                      </p>
-                      <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                        {group.location}
-                      </p>
+        {/* Experience Cards - Grouped by Company */}
+        {Object.keys(groupedExperiences).length === 0 ? (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className={`text-center py-12 rounded-2xl border ${isDark ? 'border-gray-800 bg-gray-900/50' : 'border-gray-200 bg-gray-50'}`}
+          >
+            <p className={isDark ? 'text-gray-400' : 'text-gray-500'}>
+              No {activeTab.toLowerCase()} experiences to display yet.
+            </p>
+          </motion.div>
+        ) : (
+          <div className="columns-1 lg:columns-2 gap-6">
+            {Object.values(groupedExperiences).map((group, groupIndex) => {
+              const color = colors[groupIndex % colors.length]
+              return (
+                <motion.div
+                  key={group.company}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.5, delay: 0.1 + groupIndex * 0.1 }}
+                  className={`break-inside-avoid mb-6 rounded-2xl overflow-hidden transition-all ${isDark
+                      ? 'bg-white/5 border border-white/10 hover:bg-white/[0.07]'
+                      : 'bg-white shadow-lg border border-gray-100 hover:shadow-xl'
+                    }`}
+                >
+                  {/* Company Header */}
+                  <div className="p-5 pb-0">
+                    <div className="flex items-start gap-4">
+                      {/* Company Logo */}
+                      <div
+                        className="w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden shrink-0"
+                        style={{ backgroundColor: `${color}15` }}
+                      >
+                        {group.company_logo ? (
+                          <img
+                            src={group.company_logo.startsWith('http') ? group.company_logo : `${MEDIA_BASE_URL}${group.company_logo}`}
+                            alt={group.company}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <Building2 size={24} style={{ color }} />
+                        )}
+                      </div>
+
+                      {/* Company Info */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          {group.company}
+                        </h3>
+                        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                          {group.totalDuration}
+                        </p>
+                        <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                          {group.location}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Positions Timeline */}
-                <div className="relative mt-5 ml-5">
-                  {group.positions.map((exp, posIndex) => {
-                    const isExpanded = expandedExp[`${groupIndex}-${posIndex}`]
-                    const imageMedia = exp.media?.filter(m => m.file_type?.includes('image')) || []
-                    const isLast = posIndex === group.positions.length - 1
+                  {/* Positions Timeline */}
+                  <div className="relative mt-5 ml-5">
+                    {group.positions.map((exp, posIndex) => {
+                      const isExpanded = expandedExp[`${groupIndex}-${posIndex}`]
+                      const imageMedia = exp.media?.filter(m => m.file_type?.includes('image')) || []
+                      const isLast = posIndex === group.positions.length - 1
 
-                    return (
-                      <div
-                        key={exp.id || posIndex}
-                        className="relative pb-5 pl-8"
-                      >
-                        {/* Timeline Line - connects dots, not through them */}
-                        {!isLast && (
-                          <div
-                            className="absolute w-0.5 bg-gray-400/40"
-                            style={{
-                              left: '5px',
-                              top: '20px',
-                              bottom: '0'
-                            }}
-                          />
-                        )}
-
-                        {/* Timeline Dot - solid filled circle */}
+                      return (
                         <div
-                          className="absolute top-1.5 left-0 w-3 h-3 rounded-full"
-                          style={{ backgroundColor: isDark ? '#9ca3af' : '#6b7280' }}
-                        />
+                          key={exp.id || posIndex}
+                          className="relative pb-5 pl-8"
+                        >
+                          {/* Timeline Line - connects dots, not through them */}
+                          {!isLast && (
+                            <div
+                              className="absolute w-0.5 bg-gray-400/40"
+                              style={{
+                                left: '5px',
+                                top: '20px',
+                                bottom: '0'
+                              }}
+                            />
+                          )}
 
-                        {/* Position Content */}
-                        <div>
-                          {/* Position Title */}
-                          <h4 className={`font-semibold text-base ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                            {exp.position}
-                          </h4>
+                          {/* Timeline Dot - solid filled circle */}
+                          <div
+                            className="absolute top-1.5 left-0 w-3 h-3 rounded-full"
+                            style={{ backgroundColor: isDark ? '#9ca3af' : '#6b7280' }}
+                          />
 
-                          {/* Employment Type */}
-                          <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                            {exp.employment_type || 'Full-time'}
-                          </p>
+                          {/* Position Content */}
+                          <div>
+                            {/* Position Title */}
+                            <h4 className={`font-semibold text-base ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                              {exp.position}
+                            </h4>
 
-                          {/* Date Range */}
-                          <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                            {formatPeriod(exp.start_date, exp.end_date, exp.is_current)}
-                          </p>
+                            {/* Employment Type */}
+                            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                              {exp.employment_type || 'Full-time'}
+                            </p>
 
-                          {/* Description */}
-                          {exp.description && (
-                            <div className="mt-3">
-                              <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                                {isExpanded || exp.description.length <= 150
-                                  ? exp.description
-                                  : `${exp.description.substring(0, 150)}...`}
-                                {exp.description.length > 150 && (
+                            {/* Date Range */}
+                            <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                              {formatPeriod(exp.start_date, exp.end_date, exp.is_current)}
+                            </p>
+
+                            {/* Description */}
+                            {exp.description && (
+                              <div className="mt-3">
+                                <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                                  {isExpanded || exp.description.length <= 150
+                                    ? exp.description
+                                    : `${exp.description.substring(0, 150)}...`}
+                                  {exp.description.length > 150 && (
+                                    <button
+                                      onClick={() => toggleExpand(groupIndex, posIndex)}
+                                      className="ml-1 text-gray-400 hover:text-gray-300 font-medium"
+                                    >
+                                      {isExpanded ? 'see less' : 'see more'}
+                                    </button>
+                                  )}
+                                </p>
+                              </div>
+                            )}
+
+                            {/* Skills */}
+                            {exp.skills && exp.skills.length > 0 && (
+                              <div className="mt-3 flex items-start gap-2">
+                                <Diamond size={14} className={`mt-0.5 shrink-0 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} style={{ fill: isDark ? '#6b7280' : '#9ca3af' }} />
+                                <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  {exp.skills.map(s => s.name).join(' and ')}
+                                </p>
+                              </div>
+                            )}
+
+                            {/* Media Thumbnails */}
+                            {imageMedia.length > 0 && (
+                              <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+                                {imageMedia.map((m, mIndex) => (
                                   <button
-                                    onClick={() => toggleExpand(groupIndex, posIndex)}
-                                    className="ml-1 text-gray-400 hover:text-gray-300 font-medium"
+                                    key={m.id}
+                                    onClick={() => openLightbox(exp.media, mIndex)}
+                                    className="shrink-0 w-[120px] h-[80px] rounded-lg overflow-hidden border-2 border-transparent hover:border-indigo-500 transition-all cursor-pointer group"
                                   >
-                                    {isExpanded ? 'see less' : 'see more'}
+                                    <img
+                                      src={`${MEDIA_BASE_URL}${m.file_path}`}
+                                      alt={m.title || 'Media'}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                    />
                                   </button>
-                                )}
-                              </p>
-                            </div>
-                          )}
+                                ))}
+                              </div>
+                            )}
 
-                          {/* Skills */}
-                          {exp.skills && exp.skills.length > 0 && (
-                            <div className="mt-3 flex items-start gap-2">
-                              <Diamond size={14} className={`mt-0.5 shrink-0 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} style={{ fill: isDark ? '#6b7280' : '#9ca3af' }} />
-                              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                                {exp.skills.map(s => s.name).join(' and ')}
-                              </p>
-                            </div>
-                          )}
-
-                          {/* Media Thumbnails */}
-                          {imageMedia.length > 0 && (
-                            <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
-                              {imageMedia.map((m, mIndex) => (
-                                <button
-                                  key={m.id}
-                                  onClick={() => openLightbox(exp.media, mIndex)}
-                                  className="shrink-0 w-[120px] h-[80px] rounded-lg overflow-hidden border-2 border-transparent hover:border-indigo-500 transition-all cursor-pointer group"
-                                >
-                                  <img
-                                    src={`${MEDIA_BASE_URL}${m.file_path}`}
-                                    alt={m.title || 'Media'}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                                  />
-                                </button>
-                              ))}
-                            </div>
-                          )}
-
-                          {/* Non-image Media Links */}
-                          {exp.media && exp.media.filter(m => !m.file_type?.includes('image')).length > 0 && (
-                            <div className="mt-3 flex flex-wrap gap-2">
-                              {exp.media.filter(m => !m.file_type?.includes('image')).map((m) => (
-                                <a
-                                  key={m.id}
-                                  href={`${MEDIA_BASE_URL}${m.file_path}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg transition-colors ${isDark
-                                      ? 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-                                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700'
-                                    }`}
-                                >
-                                  <FileText size={12} />
-                                  {m.title?.length > 20 ? m.title.substring(0, 20) + '...' : m.title}
-                                </a>
-                              ))}
-                            </div>
-                          )}
+                            {/* Non-image Media Links */}
+                            {exp.media && exp.media.filter(m => !m.file_type?.includes('image')).length > 0 && (
+                              <div className="mt-3 flex flex-wrap gap-2">
+                                {exp.media.filter(m => !m.file_type?.includes('image')).map((m) => (
+                                  <a
+                                    key={m.id}
+                                    href={`${MEDIA_BASE_URL}${m.file_path}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg transition-colors ${isDark
+                                        ? 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                                        : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700'
+                                      }`}
+                                  >
+                                    <FileText size={12} />
+                                    {m.title?.length > 20 ? m.title.substring(0, 20) + '...' : m.title}
+                                  </a>
+                                ))}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </motion.div>
-            )
-          })}
-        </div>
+                      )
+                    })}
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* Image Lightbox */}

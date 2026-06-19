@@ -20,6 +20,7 @@ const ExperienceManager = () => {
     end_date: '',
     is_current: false,
     description: '',
+    experience_type: 'Work',
     highlights: ['']
   })
   const [mediaForm, setMediaForm] = useState({
@@ -229,6 +230,7 @@ const ExperienceManager = () => {
         end_date: experience.end_date?.split('T')[0] || '',
         is_current: experience.is_current || false,
         description: experience.description || '',
+        experience_type: experience.experience_type || 'Work',
         highlights: experience.highlights?.length > 0 ? experience.highlights : ['']
       })
     } else {
@@ -242,6 +244,7 @@ const ExperienceManager = () => {
         end_date: '',
         is_current: false,
         description: '',
+        experience_type: 'Work',
         highlights: ['']
       })
     }
@@ -372,7 +375,16 @@ const ExperienceManager = () => {
                     </label>
                   </div>
                   <div className="flex-1">
-                    <h4 className="text-white font-semibold">{exp.position}</h4>
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-white font-semibold">{exp.position}</h4>
+                      <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${
+                        exp.experience_type === 'Organization' 
+                          ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' 
+                          : 'bg-green-500/20 text-green-400 border border-green-500/30'
+                      }`}>
+                        {exp.experience_type || 'Work'}
+                      </span>
+                    </div>
                     <p className="text-indigo-400">{exp.company}</p>
                     <div className="flex items-center gap-4 mt-2 text-sm text-gray-400">
                       <span className="flex items-center gap-1">
@@ -602,6 +614,17 @@ const ExperienceManager = () => {
                       <option value="Internship">Internship</option>
                       <option value="Apprenticeship">Apprenticeship</option>
                       <option value="Seasonal">Seasonal</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-2">Experience Type</label>
+                    <select
+                      value={formData.experience_type}
+                      onChange={(e) => setFormData({ ...formData, experience_type: e.target.value })}
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-indigo-500"
+                    >
+                      <option value="Work">Work Experience</option>
+                      <option value="Organization">Organization Experience</option>
                     </select>
                   </div>
                   <div>

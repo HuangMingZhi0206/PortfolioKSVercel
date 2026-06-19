@@ -77,12 +77,12 @@ router.get('/all', authenticateToken, async (req, res) => {
 // Add experience (protected)
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { company, position, employment_type, location, start_date, end_date, is_current, description, highlights } = req.body
+    const { company, position, employment_type, location, start_date, end_date, is_current, description, highlights, experience_type } = req.body
 
     const result = await dbRun(
-      `INSERT INTO experiences (company, position, employment_type, location, start_date, end_date, is_current, description)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [company, position, employment_type || 'Full-time', location, start_date, end_date || null, is_current ? 1 : 0, description]
+      `INSERT INTO experiences (company, position, employment_type, location, start_date, end_date, is_current, description, experience_type)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [company, position, employment_type || 'Full-time', location, start_date, end_date || null, is_current ? 1 : 0, description, experience_type || 'Work']
     )
 
     // Add highlights
@@ -106,12 +106,12 @@ router.post('/', authenticateToken, async (req, res) => {
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params
-    const { company, position, employment_type, location, start_date, end_date, is_current, description, highlights, is_active } = req.body
+    const { company, position, employment_type, location, start_date, end_date, is_current, description, highlights, is_active, experience_type } = req.body
 
     await dbRun(
       `UPDATE experiences SET company = ?, position = ?, employment_type = ?, location = ?, start_date = ?, end_date = ?, 
-       is_current = ?, description = ?, is_active = ? WHERE id = ?`,
-      [company, position, employment_type || 'Full-time', location, start_date, end_date || null, is_current ? 1 : 0, description, is_active !== false ? 1 : 0, id]
+       is_current = ?, description = ?, is_active = ?, experience_type = ? WHERE id = ?`,
+      [company, position, employment_type || 'Full-time', location, start_date, end_date || null, is_current ? 1 : 0, description, is_active !== false ? 1 : 0, experience_type || 'Work', id]
     )
 
     // Update highlights
