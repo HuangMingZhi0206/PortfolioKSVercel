@@ -1,42 +1,49 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef, useState, useEffect } from 'react'
 import { useTheme } from '../context/ThemeContext'
-import { Cog } from 'lucide-react'
+import {
+  Code, Cpu, Wifi, Globe, Shield, Server, Terminal,
+  Bot, Cog, MessageSquare, Languages, Network, HardDrive, Wrench,
+  Lightbulb, Zap, Radio, Settings, BrainCircuit, Palette,
+  FileCode, Microscope, Router, Users, Flag, Rocket,
+  MonitorSmartphone, ClipboardList
+} from 'lucide-react'
 
 import { API_URL } from '../config/api'
 
-// Real tech logo URLs from CDN (devicon + simpleicons)
-const skillLogoMap = {
-  'Python': { logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg', color: '#3776AB' },
-  'C++': { logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg', color: '#00599C' },
-  'JavaScript': { logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg', color: '#F7DF1E' },
-  'Arduino': { logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/arduino/arduino-original.svg', color: '#00979D' },
-  'Raspberry Pi': { logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/raspberrypi/raspberrypi-original.svg', color: '#C51A4A' },
-  'ESP32': { logo: 'https://cdn.simpleicons.org/espressif/E7352C', color: '#E7352C' },
-  'MQTT': { logo: 'https://cdn.simpleicons.org/mqtt/660066', color: '#660066' },
-  'Internet of Things (IoT)': { logo: 'https://cdn.simpleicons.org/homeassistant/41BDF5', color: '#41BDF5' },
-  'Network Engineering': { logo: 'https://cdn.simpleicons.org/cisco/1BA0D7', color: '#1BA0D7' },
-  'Robotics': { logo: 'https://cdn.simpleicons.org/ros/22314E', color: '#22314E' },
-  'Mobile Robotics': { logo: 'https://cdn.simpleicons.org/ros/22314E', color: '#22314E' },
-  'Robot Programming': { logo: 'https://cdn.simpleicons.org/ros/22314E', color: '#06B6D4' },
-  'Back-End Development': { logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg', color: '#339933' },
-  'Embedded Systems': { logo: 'https://cdn.simpleicons.org/stmicroelectronics/03234B', color: '#F59E0B' },
-  'Network Security': { logo: 'https://cdn.simpleicons.org/letsencrypt/003A70', color: '#003A70' },
-  'Network Administration': { logo: 'https://cdn.simpleicons.org/cisco/1BA0D7', color: '#3B82F6' },
-  'System Administration': { logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/linux/linux-original.svg', color: '#FCC624' },
-  'Graphic Design': { logo: 'https://cdn.simpleicons.org/canva/00C4CC', color: '#00C4CC' },
-  'Communication': { logo: null, color: '#8B5CF6' },
-  'Leadership': { logo: null, color: '#EAB308' },
-  'Project Management': { logo: null, color: '#14B8A6' },
-  'Bahasa Indonesia': { logo: null, color: '#EF4444' },
-  'Waste Management': { logo: null, color: '#22C55E' },
-  'Engineering': { logo: null, color: '#78716C' },
-  'Networking': { logo: 'https://cdn.simpleicons.org/cisco/1BA0D7', color: '#0EA5E9' },
-  'Information Technology Infrastructure': { logo: 'https://cdn.simpleicons.org/serverfault/E7282D', color: '#64748B' },
+// Icon mapping with appropriate Lucide icons for each skill
+const skillIconMap = {
+  'Python': { icon: Code, color: '#3776AB' },
+  'C++': { icon: Terminal, color: '#00599C' },
+  'JavaScript': { icon: FileCode, color: '#F7DF1E' },
+  'Arduino': { icon: Cpu, color: '#00979D' },
+  'Raspberry Pi': { icon: Cpu, color: '#C51A4A' },
+  'ESP32': { icon: Cpu, color: '#E7352C' },
+  'MQTT': { icon: Radio, color: '#660066' },
+  'Internet of Things (IoT)': { icon: Wifi, color: '#41BDF5' },
+  'Network Engineering': { icon: Router, color: '#1BA0D7' },
+  'Robotics': { icon: Bot, color: '#FF6B35' },
+  'Mobile Robotics': { icon: Bot, color: '#F97316' },
+  'Robot Programming': { icon: BrainCircuit, color: '#06B6D4' },
+  'Back-End Development': { icon: Server, color: '#339933' },
+  'Embedded Systems': { icon: Microscope, color: '#F59E0B' },
+  'Network Security': { icon: Shield, color: '#22C55E' },
+  'Network Administration': { icon: Network, color: '#3B82F6' },
+  'System Administration': { icon: MonitorSmartphone, color: '#FCC624' },
+  'Graphic Design': { icon: Palette, color: '#EC4899' },
+  'Communication': { icon: MessageSquare, color: '#8B5CF6' },
+  'Leadership': { icon: Rocket, color: '#EAB308' },
+  'Project Management': { icon: ClipboardList, color: '#14B8A6' },
+  'Bahasa Indonesia': { icon: Flag, color: '#EF4444' },
+  'English': { icon: Languages, color: '#3B82F6' },
+  'Waste Management': { icon: Lightbulb, color: '#22C55E' },
+  'Engineering': { icon: Wrench, color: '#78716C' },
+  'Networking': { icon: Globe, color: '#0EA5E9' },
+  'Information Technology Infrastructure': { icon: HardDrive, color: '#64748B' },
 }
 
-const getSkillLogo = (skillName) => {
-  return skillLogoMap[skillName] || { logo: null, color: '#6b7280' }
+const getSkillIcon = (skillName) => {
+  return skillIconMap[skillName] || { icon: Cog, color: '#6b7280' }
 }
 
 // Marquee row component for infinite scrolling
@@ -53,37 +60,34 @@ const MarqueeRow = ({ items, direction = 'left', speed = 30, isDark }) => {
           width: 'max-content',
         }}
       >
-        {duplicated.map((tech, index) => (
-          <div
-            key={`${tech.name}-${index}`}
-            className={`flex flex-col items-center gap-2 px-4 py-4 rounded-2xl shrink-0 cursor-default transition-all duration-300 hover:scale-110 min-w-[90px] ${isDark
-                ? 'bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.1] hover:border-white/20'
-                : 'bg-white border border-gray-200 shadow-sm hover:shadow-lg hover:border-gray-300'
-              }`}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = `0 0 25px ${tech.color}30`
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = 'none'
-            }}
-          >
-            <div className="w-10 h-10 flex items-center justify-center">
-              {tech.logo ? (
-                <img
-                  src={tech.logo}
-                  alt={tech.name}
-                  className="w-9 h-9 object-contain"
-                  loading="lazy"
-                />
-              ) : (
-                <Cog size={28} style={{ color: tech.color }} strokeWidth={1.5} />
-              )}
+        {duplicated.map((tech, index) => {
+          const IconComponent = tech.icon
+          return (
+            <div
+              key={`${tech.name}-${index}`}
+              className={`flex flex-col items-center gap-2 px-4 py-4 rounded-2xl shrink-0 cursor-default transition-all duration-300 hover:scale-110 min-w-[90px] ${isDark
+                  ? 'bg-white/[0.04] border border-white/[0.06] hover:bg-white/[0.1] hover:border-white/20'
+                  : 'bg-white border border-gray-200 shadow-sm hover:shadow-lg hover:border-gray-300'
+                }`}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = `0 0 25px ${tech.color}30`
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = 'none'
+              }}
+            >
+              <div
+                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: `${tech.color}18` }}
+              >
+                <IconComponent size={24} style={{ color: tech.color }} strokeWidth={1.8} />
+              </div>
+              <span className={`text-xs font-medium text-center whitespace-nowrap uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                {tech.name.length > 16 ? tech.name.substring(0, 14) + '...' : tech.name}
+              </span>
             </div>
-            <span className={`text-xs font-medium text-center whitespace-nowrap uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-              {tech.name.length > 14 ? tech.name.substring(0, 12) + '...' : tech.name}
-            </span>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
@@ -113,26 +117,26 @@ const Skills = () => {
   // Build all tech icons from skills for marquee
   const allTechIcons = skills.length > 0
     ? skills.map(s => {
-      const logoData = getSkillLogo(s.name)
+      const iconData = getSkillIcon(s.name)
       return {
         name: s.name,
-        logo: logoData.logo,
-        color: logoData.color || s.color || '#6366f1',
+        icon: iconData.icon,
+        color: iconData.color || s.color || '#6366f1',
       }
     })
     : [
-      { name: 'Python', logo: skillLogoMap['Python'].logo, color: '#3776AB' },
-      { name: 'C++', logo: skillLogoMap['C++'].logo, color: '#00599C' },
-      { name: 'JavaScript', logo: skillLogoMap['JavaScript'].logo, color: '#F7DF1E' },
-      { name: 'ESP32', logo: skillLogoMap['ESP32'].logo, color: '#E7352C' },
-      { name: 'Arduino', logo: skillLogoMap['Arduino'].logo, color: '#00979D' },
-      { name: 'Raspberry Pi', logo: skillLogoMap['Raspberry Pi'].logo, color: '#C51A4A' },
-      { name: 'MQTT', logo: skillLogoMap['MQTT'].logo, color: '#660066' },
-      { name: 'Robotics', logo: skillLogoMap['Robotics'].logo, color: '#FF6B35' },
-      { name: 'IoT', logo: skillLogoMap['Internet of Things (IoT)'].logo, color: '#41BDF5' },
-      { name: 'Networking', logo: skillLogoMap['Networking'].logo, color: '#0EA5E9' },
-      { name: 'Node.js', logo: skillLogoMap['Back-End Development'].logo, color: '#339933' },
-      { name: 'Linux', logo: skillLogoMap['System Administration'].logo, color: '#FCC624' },
+      { name: 'Python', icon: Code, color: '#3776AB' },
+      { name: 'C++', icon: Terminal, color: '#00599C' },
+      { name: 'JavaScript', icon: FileCode, color: '#F7DF1E' },
+      { name: 'ESP32', icon: Cpu, color: '#E7352C' },
+      { name: 'Arduino', icon: Cpu, color: '#00979D' },
+      { name: 'Raspberry Pi', icon: Cpu, color: '#C51A4A' },
+      { name: 'MQTT', icon: Radio, color: '#660066' },
+      { name: 'Robotics', icon: Bot, color: '#FF6B35' },
+      { name: 'IoT', icon: Wifi, color: '#41BDF5' },
+      { name: 'Networking', icon: Globe, color: '#0EA5E9' },
+      { name: 'Back-End', icon: Server, color: '#339933' },
+      { name: 'Leadership', icon: Rocket, color: '#EAB308' },
     ]
 
   // Split icons into two rows
