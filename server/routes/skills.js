@@ -32,7 +32,7 @@ router.post('/', authenticateToken, async (req, res) => {
     const { name, category, proficiency, icon, color, order_index } = req.body
 
     const result = await dbRun(
-      'INSERT INTO skills (name, category, proficiency, icon, color, order_index, is_active) VALUES (?, ?, ?, ?, ?, ?, 1)',
+      'INSERT INTO skills (name, category, proficiency, icon, color, order_index, is_active) VALUES (?, ?, ?, ?, ?, ?, true)',
       [name, category, proficiency || 80, icon, color, order_index || 0]
     )
 
@@ -51,7 +51,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
 
     await dbRun(
       'UPDATE skills SET name = ?, category = ?, proficiency = ?, icon = ?, color = ?, order_index = ?, is_active = ? WHERE id = ?',
-      [name, category, proficiency, icon, color, order_index, is_active ? 1 : 0, id]
+      [name, category, proficiency, icon, color, order_index, is_active ? true : false, id]
     )
 
     res.json({ message: 'Skill updated successfully' })

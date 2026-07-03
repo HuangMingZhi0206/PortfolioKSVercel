@@ -90,7 +90,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     await dbRun(
       `UPDATE certifications SET title = ?, issuer = ?, issue_date = ?, expiry_date = ?, 
        credential_id = ?, credential_url = ?, description = ?, is_active = ? WHERE id = ?`,
-      [title, issuer, issue_date, expiry_date || null, credential_id, credential_url, description, is_active !== false ? 1 : 0, id]
+      [title, issuer, issue_date, expiry_date || null, credential_id, credential_url, description, is_active !== false ? true : false, id]
     )
 
     res.json({ message: 'Certification updated successfully' })

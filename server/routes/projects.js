@@ -67,8 +67,8 @@ router.post('/', authenticateToken, async (req, res) => {
 
     const result = await dbRun(
       `INSERT INTO projects (title, description, short_description, demo_url, github_url, category, featured, start_date, end_date, is_ongoing, is_active)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
-      [title, description, short_description, demo_url, github_url, category, featured ? 1 : 0, start_date, end_date, is_ongoing ? 1 : 0]
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, true)`,
+      [title, description, short_description, demo_url, github_url, category, featured ? true : false, start_date, end_date, is_ongoing ? true : false]
     )
 
     // Add technologies
@@ -97,7 +97,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     await dbRun(
       `UPDATE projects SET title = ?, description = ?, short_description = ?, demo_url = ?, 
        github_url = ?, category = ?, featured = ?, is_active = ?, start_date = ?, end_date = ?, is_ongoing = ? WHERE id = ?`,
-      [title, description, short_description, demo_url, github_url, category, featured ? 1 : 0, is_active !== false ? 1 : 0, start_date, end_date, is_ongoing ? 1 : 0, id]
+      [title, description, short_description, demo_url, github_url, category, featured ? true : false, is_active !== false ? true : false, start_date, end_date, is_ongoing ? true : false, id]
     )
 
     // Update technologies

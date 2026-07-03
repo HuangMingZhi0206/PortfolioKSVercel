@@ -82,7 +82,7 @@ router.post('/', authenticateToken, async (req, res) => {
     const result = await dbRun(
       `INSERT INTO experiences (company, position, employment_type, location, start_date, end_date, is_current, description, experience_type)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [company, position, employment_type || 'Full-time', location, start_date, end_date || null, is_current ? 1 : 0, description, experience_type || 'Work']
+      [company, position, employment_type || 'Full-time', location, start_date, end_date || null, is_current ? true : false, description, experience_type || 'Work']
     )
 
     // Add highlights
@@ -111,7 +111,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     await dbRun(
       `UPDATE experiences SET company = ?, position = ?, employment_type = ?, location = ?, start_date = ?, end_date = ?, 
        is_current = ?, description = ?, is_active = ?, experience_type = ? WHERE id = ?`,
-      [company, position, employment_type || 'Full-time', location, start_date, end_date || null, is_current ? 1 : 0, description, is_active !== false ? 1 : 0, experience_type || 'Work', id]
+      [company, position, employment_type || 'Full-time', location, start_date, end_date || null, is_current ? true : false, description, is_active !== false ? true : false, experience_type || 'Work', id]
     )
 
     // Update highlights

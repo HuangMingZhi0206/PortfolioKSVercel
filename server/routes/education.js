@@ -37,7 +37,7 @@ router.post('/', authenticateToken, async (req, res) => {
     const result = await dbRun(
       `INSERT INTO education (institution, degree, field_of_study, start_date, end_date, is_current, description, gpa)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [institution, degree, field_of_study, start_date, end_date || null, is_current ? 1 : 0, description, gpa]
+      [institution, degree, field_of_study, start_date, end_date || null, is_current ? true : false, description, gpa]
     )
 
     res.json({ message: 'Education added successfully', id: result.lastInsertRowid })
@@ -56,7 +56,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     await dbRun(
       `UPDATE education SET institution = ?, degree = ?, field_of_study = ?, start_date = ?, 
        end_date = ?, is_current = ?, description = ?, gpa = ?, is_active = ? WHERE id = ?`,
-      [institution, degree, field_of_study, start_date, end_date || null, is_current ? 1 : 0, description, gpa, is_active !== false ? 1 : 0, id]
+      [institution, degree, field_of_study, start_date, end_date || null, is_current ? true : false, description, gpa, is_active !== false ? true : false, id]
     )
 
     res.json({ message: 'Education updated successfully' })
