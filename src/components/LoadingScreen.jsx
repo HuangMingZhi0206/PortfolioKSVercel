@@ -41,35 +41,37 @@ const LoadingScreen = () => {
         />
       </div>
 
-      {/* Binary Rain Effect */}
-      {binaryColumns.map((col) => (
-        <motion.div
-          key={col.id}
-          initial={{ y: -200, opacity: 0 }}
-          animate={{ y: '100vh', opacity: [0, 0.5, 0] }}
-          transition={{
-            duration: col.duration,
-            repeat: Infinity,
-            delay: col.delay,
-            ease: "linear",
-          }}
-          className="absolute text-xs font-mono text-green-500/30"
-          style={{ left: col.left }}
-        >
-          {['1', '0', '1', '1', '0', '0', '1', '0'].map((bit, i) => (
-            <div key={i}>{bit}</div>
-          ))}
-        </motion.div>
-      ))}
+      {/* Binary Rain Effect - hidden on mobile */}
+      <div className="hidden md:block">
+        {binaryColumns.map((col) => (
+          <motion.div
+            key={col.id}
+            initial={{ y: -200, opacity: 0 }}
+            animate={{ y: '100vh', opacity: [0, 0.5, 0] }}
+            transition={{
+              duration: col.duration,
+              repeat: Infinity,
+              delay: col.delay,
+              ease: "linear",
+            }}
+            className="absolute text-xs font-mono text-green-500/30"
+            style={{ left: col.left }}
+          >
+            {['1', '0', '1', '1', '0', '0', '1', '0'].map((bit, i) => (
+              <div key={i}>{bit}</div>
+            ))}
+          </motion.div>
+        ))}
+      </div>
 
-      {/* Glowing Orbs */}
+      {/* Glowing Orbs - hidden on mobile */}
       <motion.div
         animate={{
           scale: [1, 1.2, 1],
           opacity: [0.3, 0.5, 0.3],
         }}
         transition={{ duration: 3, repeat: Infinity }}
-        className="absolute w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl"
+        className="hidden md:block absolute w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl"
       />
       <motion.div
         animate={{
@@ -77,44 +79,46 @@ const LoadingScreen = () => {
           opacity: [0.2, 0.4, 0.2],
         }}
         transition={{ duration: 4, repeat: Infinity }}
-        className="absolute w-48 h-48 bg-purple-500/20 rounded-full blur-3xl translate-x-20 translate-y-10"
+        className="hidden md:block absolute w-48 h-48 bg-purple-500/20 rounded-full blur-3xl translate-x-20 translate-y-10"
       />
 
       {/* Main Content Container */}
       <div className="relative z-10 flex flex-col items-center justify-center">
-        {/* Floating IT Icons */}
-        {floatingIcons.map(({ Icon, delay, x, y }, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
-            animate={{ 
-              opacity: [0, 0.6, 0.6],
-              scale: [0, 1, 1],
-              x: x,
-              y: y,
-            }}
-            transition={{
-              duration: 1,
-              delay: delay,
-              ease: "easeOut",
-            }}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-          >
+        {/* Floating IT Icons - hidden on mobile */}
+        <div className="hidden md:block">
+          {floatingIcons.map(({ Icon, delay, x, y }, index) => (
             <motion.div
+              key={index}
+              initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
               animate={{ 
-                y: [0, -10, 0],
-                rotate: [0, 5, -5, 0],
+                opacity: [0, 0.6, 0.6],
+                scale: [0, 1, 1],
+                x: x,
+                y: y,
               }}
               transition={{
-                duration: 3,
-                repeat: Infinity,
+                duration: 1,
                 delay: delay,
+                ease: "easeOut",
               }}
+              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
             >
-              <Icon size={24} className="text-indigo-400/60" />
+              <motion.div
+                animate={{ 
+                  y: [0, -10, 0],
+                  rotate: [0, 5, -5, 0],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  delay: delay,
+                }}
+              >
+                <Icon size={24} className="text-indigo-400/60" />
+              </motion.div>
             </motion.div>
-          </motion.div>
-        ))}
+          ))}
+        </div>
 
         {/* Center Logo Container */}
         <div className="relative flex items-center justify-center">
@@ -185,9 +189,9 @@ const LoadingScreen = () => {
           >
             {/* Glow Effect */}
             <motion.div
-              animate={{ opacity: [0.5, 1, 0.5] }}
+              animate={{ opacity: [0.3, 0.7, 0.3] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="absolute inset-0 blur-xl bg-gradient-to-r from-indigo-500 to-purple-500 opacity-50"
+              className="absolute inset-0 blur-lg md:blur-xl bg-gradient-to-r from-indigo-500 to-purple-500 opacity-30 md:opacity-50"
               style={{ transform: 'scale(1.5)' }}
             />
             
