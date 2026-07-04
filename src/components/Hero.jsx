@@ -263,7 +263,7 @@ const Hero = () => {
             {/* Profile Container - Organic Shape */}
             <div className="relative w-64 h-64 md:w-80 md:h-80 z-10">
               {/* Glow Effect */}
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-[60%_40%_30%_70%/60%_30%_70%_40%] blur-2xl opacity-40 animate-pulse" />
+              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-[60%_40%_30%_70%/60%_30%_70%_40%] blur-xl md:blur-2xl opacity-20 md:opacity-40 md:animate-pulse" />
 
               {/* Profile Image with creative border */}
               <div

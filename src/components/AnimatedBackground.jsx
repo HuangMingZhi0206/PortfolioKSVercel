@@ -56,7 +56,7 @@ const AnimatedBackground = () => {
           : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50'
       }`} />
 
-      {/* Animated Gradient Orbs */}
+      {/* Animated Gradient Orbs - hidden on mobile */}
       <motion.div
         animate={{
           x: [0, 100, 0],
@@ -64,7 +64,7 @@ const AnimatedBackground = () => {
           scale: [1, 1.2, 1],
         }}
         transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-        className={`absolute top-1/4 -left-32 w-96 h-96 rounded-full blur-3xl ${
+        className={`hidden md:block absolute top-1/4 -left-32 w-96 h-96 rounded-full blur-3xl ${
           isDark ? 'bg-indigo-500/10' : 'bg-indigo-300/30'
         }`}
       />
@@ -75,7 +75,7 @@ const AnimatedBackground = () => {
           scale: [1, 1.3, 1],
         }}
         transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-        className={`absolute bottom-1/4 -right-32 w-96 h-96 rounded-full blur-3xl ${
+        className={`hidden md:block absolute bottom-1/4 -right-32 w-96 h-96 rounded-full blur-3xl ${
           isDark ? 'bg-purple-500/10' : 'bg-purple-300/30'
         }`}
       />
@@ -85,7 +85,7 @@ const AnimatedBackground = () => {
           y: [0, -40, 40, 0],
         }}
         transition={{ duration: 30, repeat: Infinity, ease: "easeInOut" }}
-        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-3xl ${
+        className={`hidden lg:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-3xl ${
           isDark ? 'bg-cyan-500/5' : 'bg-cyan-300/20'
         }`}
       />
@@ -107,7 +107,7 @@ const AnimatedBackground = () => {
         </svg>
       </div>
 
-      {/* Horizontal Scan Lines */}
+      {/* Horizontal Scan Lines - Reduced on mobile */}
       {gridLines.map((_, i) => (
         <motion.div
           key={`h-line-${i}`}
@@ -123,7 +123,7 @@ const AnimatedBackground = () => {
             ease: "linear"
           }}
           style={{ top: `${10 + i * 10}%` }}
-          className={`absolute left-0 w-full h-px ${
+          className={`absolute left-0 w-full h-px ${i > 1 ? 'hidden md:block' : ''} ${
             isDark ? 'bg-gradient-to-r from-transparent via-indigo-500/30 to-transparent' : 'bg-gradient-to-r from-transparent via-indigo-400/40 to-transparent'
           }`}
         />
@@ -159,7 +159,7 @@ const AnimatedBackground = () => {
         </motion.div>
       ))}
 
-      {/* Binary Rain Effect - Reduced quantity */}
+      {/* Binary Rain Effect - hidden on mobile */}
       {Array.from({ length: 4 }).map((_, i) => (
         <motion.div
           key={`binary-${i}`}
@@ -175,7 +175,7 @@ const AnimatedBackground = () => {
             ease: "linear",
           }}
           style={{ left: `${5 + i * 12}%` }}
-          className={`absolute text-xs font-mono ${
+          className={`hidden md:block absolute text-xs font-mono ${
             isDark ? 'text-green-500/20' : 'text-green-600/30'
           }`}
         >
@@ -185,8 +185,8 @@ const AnimatedBackground = () => {
         </motion.div>
       ))}
 
-      {/* Circuit Lines */}
-      <svg className="absolute inset-0 w-full h-full" style={{ opacity: isDark ? 0.05 : 0.08 }}>
+      {/* Circuit Lines - hidden on mobile */}
+      <svg className="hidden md:block absolute inset-0 w-full h-full" style={{ opacity: isDark ? 0.05 : 0.08 }}>
         <motion.path
           d="M 0 200 Q 200 150, 400 200 T 800 200 T 1200 200"
           stroke={isDark ? '#6366f1' : '#4f46e5'}
