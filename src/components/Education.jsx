@@ -127,7 +127,7 @@ const Education = () => {
                           style={{ backgroundColor: `${color}20` }}
                         >
                           {edu.logo ? (
-                            <img
+                            <img loading="lazy"
                               src={edu.logo.startsWith('http') ? edu.logo : `${MEDIA_BASE_URL}${edu.logo}`}
                               alt={edu.institution}
                               className="w-full h-full object-cover"

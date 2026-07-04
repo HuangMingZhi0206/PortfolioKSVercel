@@ -108,13 +108,13 @@ const Projects = () => {
                       style={{ background: `linear-gradient(135deg, ${color}20, ${color}05)` }}
                     >
                       {project.image ? (
-                        <img
+                        <img loading="lazy"
                           src={project.image.startsWith('http') ? project.image : `${MEDIA_BASE_URL}${project.image}`}
                           alt={project.title}
                           className="w-full h-full object-cover"
                         />
                       ) : project.media && project.media.length > 0 ? (
-                        <img
+                        <img loading="lazy"
                           src={project.media[0].media_url.startsWith('http') ? project.media[0].media_url : `${MEDIA_BASE_URL}${project.media[0].media_url}`}
                           alt={project.title}
                           className="w-full h-full object-cover"
@@ -236,7 +236,7 @@ const Projects = () => {
                   <div className="relative">
                     {/* Main Image */}
                     <div className="aspect-video bg-black flex items-center justify-center">
-                      <img
+                      <img loading="lazy"
                         src={selectedProject.media[currentMediaIndex].media_url.startsWith('http')
                           ? selectedProject.media[currentMediaIndex].media_url
                           : `${MEDIA_BASE_URL}${selectedProject.media[currentMediaIndex].media_url}`}
@@ -279,7 +279,7 @@ const Projects = () => {
                                 : 'border-transparent opacity-60 hover:opacity-100'
                               }`}
                           >
-                            <img
+                            <img loading="lazy"
                               src={media.media_url.startsWith('http') ? media.media_url : `${MEDIA_BASE_URL}${media.media_url}`}
                               alt={media.caption || `Media ${index + 1}`}
                               className="w-full h-full object-cover"
@@ -291,7 +291,7 @@ const Projects = () => {
                   </div>
                 ) : selectedProject.image ? (
                   <div className="aspect-video bg-black flex items-center justify-center">
-                    <img
+                    <img loading="lazy"
                       src={selectedProject.image.startsWith('http') ? selectedProject.image : `${MEDIA_BASE_URL}${selectedProject.image}`}
                       alt={selectedProject.title}
                       className="max-w-full max-h-full object-contain"

@@ -274,7 +274,7 @@ const Hero = () => {
                   background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2))',
                 }}
               >
-                <img
+                <img loading="lazy"
                   src={profileImg}
                   alt="Kevin Syonin"
                   className="w-full h-full object-cover"

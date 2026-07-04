@@ -119,7 +119,7 @@ const ImageLightbox = ({ images, initialIndex = 0, isOpen, onClose }) => {
             transition={{ duration: 0.2 }}
             className="max-w-[90vw] max-h-[85vh] flex flex-col items-center"
           >
-            <img
+            <img loading="lazy"
               src={`${MEDIA_BASE_URL}${currentImage.file_path}`}
               alt={currentImage.title || 'Image'}
               className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl"
@@ -145,7 +145,7 @@ const ImageLightbox = ({ images, initialIndex = 0, isOpen, onClose }) => {
                       : 'border-transparent opacity-50 hover:opacity-100'
                     }`}
                 >
-                  <img
+                  <img loading="lazy"
                     src={`${MEDIA_BASE_URL}${img.file_path}`}
                     alt={img.title || `Thumbnail ${index + 1}`}
                     className="w-full h-full object-cover"

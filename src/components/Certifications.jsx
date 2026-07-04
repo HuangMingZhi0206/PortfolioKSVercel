@@ -233,7 +233,7 @@ const Certifications = () => {
                       style={{ backgroundColor: `${colors[index % colors.length]}20` }}
                     >
                       {cert.image ? (
-                        <img src={cert.image.startsWith('http') ? cert.image : `${MEDIA_BASE_URL}${cert.image}`} alt={cert.title} className="w-full h-full object-cover" />
+                        <img loading="lazy" src={cert.image.startsWith('http') ? cert.image : `${MEDIA_BASE_URL}${cert.image}`} alt={cert.title} className="w-full h-full object-cover" />
                       ) : (
                         icons[index % icons.length]
                       )}
@@ -291,7 +291,7 @@ const Certifications = () => {
                                 className={`relative w-16 h-16 rounded-xl overflow-hidden group cursor-pointer ${isDark ? 'ring-1 ring-white/10' : 'ring-1 ring-gray-200'
                                   }`}
                               >
-                                <img
+                                <img loading="lazy"
                                   src={`${MEDIA_BASE_URL}${m.file_path}`}
                                   alt={m.title || 'Certificate'}
                                   className="w-full h-full object-cover transition-transform group-hover:scale-110"

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense, lazy } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { ThemeProvider, useTheme } from './context/ThemeContext'
@@ -14,8 +14,8 @@ import Certifications from './components/Certifications'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import LoadingScreen from './components/LoadingScreen'
-import AdminLogin from './pages/admin/AdminLogin'
-import AdminDashboard from './pages/admin/AdminDashboard'
+const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'))
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -39,7 +39,7 @@ const PortfolioContent = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false)
-    }, 2500)
+    }, 500)
     return () => clearTimeout(timer)
   }, [])
 
@@ -87,12 +87,21 @@ function App() {
             <Route path="/" element={<PortfolioContent />} />
             
             {/* Admin Routes */}
-            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route 
+              path="/admin/login" 
+              element={
+                <Suspense fallback={<LoadingScreen />}>
+                  <AdminLogin />
+                </Suspense>
+              } 
+            />
             <Route 
               path="/admin" 
               element={
                 <ProtectedRoute>
-                  <AdminDashboard />
+                  <Suspense fallback={<LoadingScreen />}>
+                    <AdminDashboard />
+                  </Suspense>
                 </ProtectedRoute>
               } 
             />
@@ -100,7 +109,9 @@ function App() {
               path="/admin/*" 
               element={
                 <ProtectedRoute>
-                  <AdminDashboard />
+                  <Suspense fallback={<LoadingScreen />}>
+                    <AdminDashboard />
+                  </Suspense>
                 </ProtectedRoute>
               } 
             />

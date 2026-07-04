@@ -231,7 +231,7 @@ const Experience = () => {
                         style={{ backgroundColor: `${color}15` }}
                       >
                         {group.company_logo ? (
-                          <img
+                          <img loading="lazy"
                             src={group.company_logo.startsWith('http') ? group.company_logo : `${MEDIA_BASE_URL}${group.company_logo}`}
                             alt={group.company}
                             className="w-full h-full object-cover"
@@ -341,7 +341,7 @@ const Experience = () => {
                                     onClick={() => openLightbox(exp.media, mIndex)}
                                     className="shrink-0 w-[120px] h-[80px] rounded-lg overflow-hidden border-2 border-transparent hover:border-indigo-500 transition-all cursor-pointer group"
                                   >
-                                    <img
+                                    <img loading="lazy"
                                       src={`${MEDIA_BASE_URL}${m.file_path}`}
                                       alt={m.title || 'Media'}
                                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
