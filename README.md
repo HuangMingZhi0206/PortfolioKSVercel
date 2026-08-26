@@ -1,16 +1,65 @@
-# React + Vite
+# Kevin Syonin — Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Personal portfolio with a public site and an admin dashboard.
 
-Currently, two official plugins are available:
+- **Frontend:** React 18 + Vite + Tailwind CSS + Framer Motion
+- **Backend:** Express (also deployed as a Vercel serverless function via `api/index.js`)
+- **Database:** Supabase Postgres
+- **Media:** Cloudinary
+- **Design:** "Lotus" theme — cream & lotus-blue palette, serif display type (Fraunces), floating dynamic-island navigation
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Project structure
 
-## React Compiler
+```
+├── api/               Vercel serverless entry (re-exports the Express app)
+├── server/            Express API
+│   ├── config/        Database connection & schema init
+│   ├── middleware/    Auth (JWT) & upload (Cloudinary) middleware
+│   ├── routes/        REST routes per resource
+│   └── scripts/       One-off migration/maintenance scripts
+└── src/
+    ├── components/    Public site sections
+    │   ├── decor/     Lotus SVG artwork
+    │   └── ui/        Shared UI building blocks
+    ├── constants/     Nav links & site identity
+    ├── context/       Theme & auth providers
+    ├── hooks/         useApiData — shared data fetching
+    ├── lib/           Date, media-URL & skill-icon helpers
+    └── pages/admin/   Admin dashboard
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Setup
 
-## Expanding the ESLint configuration
+1. Install dependencies:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+   ```bash
+   npm install
+   cd server && npm install
+   ```
+
+2. Create env files from the examples and fill in your values:
+
+   ```bash
+   cp .env.example .env
+   cp server/.env.example server/.env
+   ```
+
+   `server/.env` needs your Supabase `DATABASE_URL`, a `JWT_SECRET`,
+   Cloudinary keys, and Gmail app-password for the contact form.
+
+3. Run backend and frontend in two terminals:
+
+   ```bash
+   npm run server
+   ```
+
+   ```bash
+   npm run dev
+   ```
+
+   Frontend: http://localhost:5173 · API: http://localhost:5000
+
+## Notes
+
+- `.env` files are gitignored — never commit credentials.
+- `server/scripts/` contains legacy one-off scripts; they read `DATABASE_URL` from the environment.

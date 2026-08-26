@@ -2,21 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ---------------------------------------------------------------------------
+   Lotus theme tokens
+   Light: warm cream surfaces, deep blue-slate ink, lotus-blue accent
+   Dark:  deep navy surfaces, cream ink, airy blue accent
+--------------------------------------------------------------------------- */
 :root {
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #12121a;
-  --bg-card: #1a1a24;
-  --text-primary: #ffffff;
-  --text-secondary: #a0a0b0;
-  --accent: #6366f1;
-  --accent-secondary: #8b5cf6;
-  --gradient-1: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --bg: #faf7f0;
+  --bg-soft: #f2ede2;
+  --card: #ffffff;
+  --ink: #1b2a41;
+  --muted: #5a6b7e;
+  --line: #e5decf;
+  --accent: #2e6baa;
+  --accent-strong: #255689;
+  --accent-soft: #dfebf7;
+  --gold: #c6a75e;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+.dark {
+  --bg: #0b1522;
+  --bg-soft: #0f1d2e;
+  --card: #12202f;
+  --ink: #efeae0;
+  --muted: #93a5b8;
+  --line: rgba(255, 255, 255, 0.08);
+  --accent: #7fb3e8;
+  --accent-strong: #a9cdf2;
+  --accent-soft: rgba(127, 179, 232, 0.12);
+  --gold: #d8be8c;
 }
 
 html {
@@ -24,107 +38,101 @@ html {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg);
+  color: var(--ink);
   overflow-x: hidden;
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-/* Custom Scrollbar */
+::selection {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-primary);
+  background: var(--bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--accent);
-  border-radius: 4px;
+  background: var(--line);
+  border-radius: 6px;
+  border: 2px solid var(--bg);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-secondary);
+  background: var(--accent);
 }
 
-/* Glassmorphism effect */
-.glass {
-  background: rgba(26, 26, 36, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+@layer components {
+  /* Frosted surface used by the island navbar and floating panels */
+  .glass {
+    @apply bg-white/65 dark:bg-night-800/60 backdrop-blur-xl border border-cream-300/60 dark:border-white/10;
+  }
+
+  /* Standard content card */
+  .card {
+    @apply bg-white dark:bg-night-800 border border-cream-300/70 dark:border-white/[0.06] rounded-3xl shadow-soft;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lift;
+  }
+
+  /* Heading accent */
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-lotus-700 to-lotus-400 dark:from-lotus-300 dark:to-lotus-100;
+  }
+
+  /* Primary + secondary buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-medium text-white bg-lotus-600 hover:bg-lotus-700 dark:bg-lotus-500 dark:hover:bg-lotus-400 dark:text-night-900 shadow-soft transition-colors;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-medium text-lotus-700 dark:text-lotus-200 bg-white dark:bg-night-800 border border-cream-300 dark:border-white/10 hover:border-lotus-300 dark:hover:border-lotus-400/40 shadow-soft transition-colors;
+  }
+
+  /* Small tag chip */
+  .chip {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-lotus-50 text-lotus-700 dark:bg-lotus-400/10 dark:text-lotus-200 border border-lotus-100 dark:border-lotus-400/20;
+  }
+
+  /* Form input */
+  .input {
+    @apply w-full px-4 py-3 rounded-2xl bg-cream-50 dark:bg-night-900/60 border border-cream-300 dark:border-white/10 text-current placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-lotus-400 focus:ring-2 focus:ring-lotus-200/60 dark:focus:ring-lotus-400/20 transition;
+  }
 }
 
-/* Gradient text */
-.gradient-text {
-  background: var(--gradient-1);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Glow effect */
-.glow {
-  box-shadow: 0 0 40px rgba(99, 102, 241, 0.3);
-}
-
-/* Card hover effect */
-.card-hover {
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.card-hover:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
-}
-
-/* Floating animation */
+/* Gentle floating for decorative elements */
 @keyframes float {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-20px) rotate(5deg);
-  }
-}
-
-@keyframes float-slow {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
 }
 
 .animate-float {
-  animation: float 6s ease-in-out infinite;
+  animation: float 7s ease-in-out infinite;
 }
 
-.animate-float-slow {
-  animation: float-slow 4s ease-in-out infinite;
+/* Slow drift for lotus artwork */
+@keyframes drift {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(1.5deg); }
 }
 
-.animate-spin-slow {
-  animation: spin-slow 20s linear infinite;
+.animate-drift {
+  animation: drift 10s ease-in-out infinite;
 }
 
-/* Progressive blur on scroll */
-.blur-on-scroll {
-  transition: filter 0.3s ease;
-}
-
-/* Magnetic cursor effect area */
-.magnetic {
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-drift {
+    animation: none;
+  }
 }

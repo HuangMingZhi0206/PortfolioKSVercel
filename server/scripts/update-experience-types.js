@@ -1,4 +1,4 @@
-import pg from 'pg';
+﻿import pg from 'pg';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -7,7 +7,7 @@ const { Client } = pg;
 
 async function updateExperienceTypes() {
   // Using the hardcoded connection string from test-db.js for reliability
-  const connectionString = 'postgresql://postgres.tdzyduamddvbspwyvryy:passangelkevin0206@aws-1-ap-northeast-1.pooler.supabase.com:6543/postgres';
+  const connectionString = process.env.DATABASE_URL;
   const client = new Client({ connectionString });
   
   try {
@@ -41,3 +41,4 @@ async function updateExperienceTypes() {
 }
 
 updateExperienceTypes();
+

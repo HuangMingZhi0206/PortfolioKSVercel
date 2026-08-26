@@ -5,13 +5,20 @@ dotenv.config()
 
 const { Pool } = pg
 
-// For Vercel Serverless, we use connection pooling
+// Connection pool tuned for the Supabase pooler: keep connections fresh
+// (the pooler silently drops idle ones) and always use SSL.
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
-  max: 10,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
+  ssl: { rejectUnauthorized: false },
+  max: 5,
+  idleTimeoutMillis: 10000,
+  connectionTimeoutMillis: 10000,
+  keepAlive: true,
+})
+
+// A dropped idle connection must not crash the server
+pool.on('error', (err) => {
+  console.error('Idle database connection error:', err.message)
 })
 
 const testConnection = async () => {

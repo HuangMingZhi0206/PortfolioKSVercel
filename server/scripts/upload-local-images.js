@@ -1,3 +1,4 @@
+﻿import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 import pg from 'pg';
@@ -8,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Supabase and Cloudinary Credentials
-const connectionString = 'postgresql://postgres.tdzyduamddvbspwyvryy:passangelkevin0206@aws-1-ap-northeast-1.pooler.supabase.com:6543/postgres';
+const connectionString = process.env.DATABASE_URL;
 const pgClient = new pg.Client({ connectionString });
 
 cloudinary.config({
@@ -114,3 +115,4 @@ async function migrateImages() {
 }
 
 migrateImages();
+

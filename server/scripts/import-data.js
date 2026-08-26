@@ -1,7 +1,8 @@
+﻿import 'dotenv/config';
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { initDatabase, dbExec, dbRun } from './config/database.js'
+import { initDatabase, dbExec, dbRun } from '../config/database.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -11,21 +12,21 @@ const importData = async () => {
         const sqlPath = path.join(__dirname, '..', '..', 'portfolio_db.sql')
 
         if (!fs.existsSync(sqlPath)) {
-            console.error('❌ SQL dump file not found at:', sqlPath)
+            console.error('âŒ SQL dump file not found at:', sqlPath)
             return
         }
 
-        console.log('📖 Reading SQL dump file...')
+        console.log('ðŸ“– Reading SQL dump file...')
         const sqlContent = fs.readFileSync(sqlPath, 'utf8')
 
-        console.log('🔄 Initializing database...')
+        console.log('ðŸ”„ Initializing database...')
         await initDatabase()
 
         // Extract INSERT statements
         const lines = sqlContent.split('\n')
         let count = 0
 
-        console.log('🚀 Starting import...')
+        console.log('ðŸš€ Starting import...')
 
         // Clear existing data first
         const tables = [
@@ -35,7 +36,7 @@ const importData = async () => {
             'skills', 'education', 'contact_messages', 'about_me', 'admin_users'
         ]
 
-        console.log('🧹 Clearing existing data...')
+        console.log('ðŸ§¹ Clearing existing data...')
         for (const table of tables) {
             try {
                 dbExec(`DELETE FROM ${table};`)
@@ -69,7 +70,7 @@ const importData = async () => {
                     process.stdout.write('.')
                     count++
                 } catch (err) {
-                    console.error(`\n❌ Error executing statement: ${statement.substring(0, 50)}...`)
+                    console.error(`\nâŒ Error executing statement: ${statement.substring(0, 50)}...`)
                     console.error(err.message)
                 }
 
@@ -78,7 +79,7 @@ const importData = async () => {
             }
         }
 
-        console.log(`\n\n✅ Import completed! Imported ${count} records.`)
+        console.log(`\n\nâœ… Import completed! Imported ${count} records.`)
 
     } catch (error) {
         console.error('Fatal error:', error)
@@ -86,3 +87,5 @@ const importData = async () => {
 }
 
 importData()
+
+

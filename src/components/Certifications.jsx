@@ -1,374 +1,232 @@
 import { motion, useInView } from 'framer-motion'
-import { useRef, useState, useEffect } from 'react'
-import Tilt from 'react-parallax-tilt'
-import {
-  Award, Calendar, ExternalLink, FileText, Image as ImageIcon,
-  Code, Cpu, Wifi, Globe, Shield, Server, Database, Terminal,
-  Bot, Cog, MessageSquare, Languages, Network, HardDrive, Wrench,
-  Lightbulb, Zap, Radio, Settings, Layers, BrainCircuit
-} from 'lucide-react'
-import { useTheme } from '../context/ThemeContext'
+import { useRef, useState } from 'react'
+import { Award, Calendar, ExternalLink, FileText, Image as ImageIcon } from 'lucide-react'
+import { useApiData } from '../hooks/useApiData'
+import { getSkillData } from '../lib/skillIcons'
+import { mediaUrl } from '../lib/media'
+import SectionHeader from './ui/SectionHeader'
 import ImageLightbox from './ImageLightbox'
 
-// Skill icon mapping
-const skillIcons = {
-  'Python': { icon: Code, color: '#3776ab' },
-  'C++': { icon: Terminal, color: '#00599c' },
-  'JavaScript': { icon: Code, color: '#f7df1e' },
-  'Internet of Things (IoT)': { icon: Wifi, color: '#00b4d8' },
-  'ESP32': { icon: Cpu, color: '#e7352c' },
-  'Arduino': { icon: Cpu, color: '#00979d' },
-  'Raspberry Pi': { icon: Cpu, color: '#c51a4a' },
-  'MQTT': { icon: Radio, color: '#660066' },
-  'Network Engineering': { icon: Network, color: '#0066cc' },
-  'Robotics': { icon: Bot, color: '#ff6b35' },
-  'Waste Management': { icon: Lightbulb, color: '#22c55e' },
-  'Back-End Development': { icon: Server, color: '#6366f1' },
-  'Embedded Systems': { icon: Cpu, color: '#f59e0b' },
-  'Communication': { icon: MessageSquare, color: '#8b5cf6' },
-  'Graphic Design': { icon: Layers, color: '#ec4899' },
-  'Leadership': { icon: Zap, color: '#eab308' },
-  'Project Management': { icon: Settings, color: '#14b8a6' },
-  'Bahasa Indonesia': { icon: Languages, color: '#ef4444' },
-  'Network Security': { icon: Shield, color: '#22c55e' },
-  'Network Administration': { icon: Network, color: '#3b82f6' },
-  'System Administration': { icon: Server, color: '#8b5cf6' },
-  'Mobile Robotics': { icon: Bot, color: '#f97316' },
-  'Robot Programming': { icon: BrainCircuit, color: '#06b6d4' },
-  'Information Technology Infrastructure': { icon: HardDrive, color: '#64748b' },
-  'Engineering': { icon: Wrench, color: '#78716c' },
-  'Networking': { icon: Globe, color: '#0ea5e9' },
-}
+const DEFAULT_CERTIFICATIONS = [
+  {
+    title: 'Back End Developer',
+    issuer: 'Professional Certification',
+    issue_date: '2024-01-01',
+    description: 'Certification in back-end development and server-side programming',
+    icon: '🔧',
+  },
+  {
+    title: 'Code Kickstart Python Programming',
+    issuer: 'Samsung Innovation Campus - Batch 7 Stage 1',
+    issue_date: '2024-01-01',
+    description: 'Advanced Python programming and IoT training from Samsung Innovation Campus',
+    icon: '🐍',
+  },
+  {
+    title: 'Brocade Certified Network Engineer (BCNE)',
+    issuer: 'Brocade',
+    issue_date: '2023-01-01',
+    description: 'Network engineering certification covering enterprise networking solutions',
+    icon: '🌐',
+  },
+]
 
-const getSkillIcon = (skillName) => {
-  return skillIcons[skillName] || { icon: Cog, color: '#6b7280' }
-}
+const AWARDS = [
+  {
+    title: 'Silver Medal - WICE 2025',
+    event: 'World Invention Competition & Exhibition',
+    description: 'Automated Waste Management System with Real-Time IoT Monitoring',
+    year: '2025',
+  },
+  {
+    title: 'National Robotics Competition Winner',
+    event: 'National Robotics Championship',
+    description: 'Top 3 National Rankings in Competitive Robotics',
+    year: '2024',
+  },
+  {
+    title: 'Top 26 Regional Excellence Award',
+    event: 'West Java Vocational Excellence',
+    description: 'Regional recognition for vocational excellence',
+    year: '2023',
+  },
+]
 
-import { API_URL, MEDIA_BASE_URL } from '../config/api'
+const FALLBACK_ICONS = ['🔧', '🐍', '🌐', '🎨', '🏆', '🖥️']
 
 const Certifications = () => {
   const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
-  const { isDark } = useTheme()
-  const [certifications, setCertifications] = useState([])
-  const [selectedCert, setSelectedCert] = useState(null)
-
-  // Lightbox state
-  const [lightboxOpen, setLightboxOpen] = useState(false)
-  const [lightboxImages, setLightboxImages] = useState([])
-  const [lightboxIndex, setLightboxIndex] = useState(0)
+  const isInView = useInView(ref, { once: true, margin: '-100px' })
+  const certifications = useApiData('/certifications', DEFAULT_CERTIFICATIONS)
+  const [lightbox, setLightbox] = useState({ open: false, images: [], index: 0 })
 
   const openLightbox = (media, index = 0) => {
-    // Filter only image files
-    const images = media.filter(m => m.file_type?.includes('image'))
-    if (images.length > 0) {
-      setLightboxImages(images)
-      setLightboxIndex(index)
-      setLightboxOpen(true)
-    }
+    const images = media.filter((m) => m.file_type?.includes('image'))
+    if (images.length > 0) setLightbox({ open: true, images, index })
   }
 
-  const defaultCertifications = [
-    {
-      title: 'Back End Developer',
-      issuer: 'Professional Certification',
-      issue_date: '2024-01-01',
-      description: 'Certification in back-end development and server-side programming',
-      color: '#6366f1',
-      icon: '🔧'
-    },
-    {
-      title: 'Code Kickstart Python Programming',
-      issuer: 'Samsung Innovation Campus - Batch 7 Stage 1',
-      issue_date: '2024-01-01',
-      description: 'Advanced Python programming and IoT training from Samsung Innovation Campus',
-      color: '#1428a0',
-      icon: '🐍'
-    },
-    {
-      title: 'Brocade Certified Network Engineer (BCNE)',
-      issuer: 'Brocade',
-      issue_date: '2023-01-01',
-      description: 'Network engineering certification covering enterprise networking solutions',
-      color: '#e7352c',
-      icon: '🌐'
-    }
-  ]
-
-  useEffect(() => {
-    const fetchCertifications = async () => {
-      try {
-        const response = await fetch(`${API_URL}/certifications`)
-        const data = await response.json()
-        if (data && data.length > 0) {
-          setCertifications(data)
-        } else {
-          setCertifications(defaultCertifications)
-        }
-      } catch (error) {
-        console.error('Failed to fetch certifications:', error)
-        setCertifications(defaultCertifications)
-      }
-    }
-    fetchCertifications()
-  }, [])
-
-  const colors = ['#6366f1', '#1428a0', '#e7352c', '#8b5cf6', '#10b981', '#f59e0b']
-  const icons = ['🔧', '🐍', '🌐', '🎨', '🏆', '🖥️']
-
-  const awards = [
-    {
-      title: 'Silver Medal - WICE 2025',
-      event: 'World Invention Competition & Exhibition',
-      description: 'Automated Waste Management System with Real-Time IoT Monitoring',
-      year: '2025'
-    },
-    {
-      title: 'National Robotics Competition Winner',
-      event: 'National Robotics Championship',
-      description: 'Top 3 National Rankings in Competitive Robotics',
-      year: '2024'
-    },
-    {
-      title: 'Top 26 Regional Excellence Award',
-      event: 'West Java Vocational Excellence',
-      description: 'Regional recognition for vocational excellence',
-      year: '2023'
-    }
-  ]
-
   return (
-    <section id="certifications" className="relative py-20 md:py-32 overflow-hidden" ref={ref}>
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Awards Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <h2 className={`text-4xl md:text-5xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-            Awards & <span className="gradient-text">Recognition</span>
-          </h2>
-          <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-            Achievements that highlight my journey in technology
-          </p>
-        </motion.div>
+    <section id="certifications" className="relative py-16 md:py-28" ref={ref}>
+      <div className="relative z-10 max-w-content mx-auto px-4 sm:px-6 lg:px-8">
+        <SectionHeader
+          title="Awards &"
+          accent="Recognition"
+          description="Achievements that highlight my journey in technology"
+          inView={isInView}
+        />
 
-        {/* Awards Grid */}
-        <div className="grid md:grid-cols-3 gap-6 mb-20">
-          {awards.map((award, index) => (
+        {/* Awards */}
+        <div className="grid md:grid-cols-3 gap-5 mb-20">
+          {AWARDS.map((award, index) => (
             <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 50, scale: 0.9 }}
-              animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
-              transition={{ duration: 0.6, delay: 0.1 + index * 0.1 }}
+              key={award.title}
+              initial={{ opacity: 0, y: 32 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.55, delay: 0.1 + index * 0.1 }}
+              className="card card-hover p-8 text-center relative overflow-hidden"
             >
-              <Tilt
-                tiltMaxAngleX={10}
-                tiltMaxAngleY={10}
-                glareEnable={true}
-                glareMaxOpacity={0.2}
-                glareColor="#fbbf24"
-                className="h-full"
-              >
-                <div className={`relative rounded-3xl p-8 h-full card-hover text-center overflow-hidden transition-colors ${isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
-                  }`}>
-                  {/* Glow Effect */}
-                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-yellow-500/20 rounded-full blur-3xl" />
-
-                  {/* Trophy Icon */}
-                  <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-500 mb-4">
-                    <Award className="text-white" size={32} />
-                  </div>
-
-                  <h3 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>{award.title}</h3>
-                  <p className="text-indigo-500 text-sm mb-3">{award.event}</p>
-                  <p className={`text-sm mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{award.description}</p>
-                  <span className={`inline-block px-3 py-1 rounded-full text-sm ${isDark ? 'bg-white/5 text-gray-300' : 'bg-gray-100 text-gray-700'
-                    }`}>
-                    {award.year}
-                  </span>
-                </div>
-              </Tilt>
+              <div className="absolute -top-12 -right-12 w-32 h-32 bg-gold/10 rounded-full blur-2xl" />
+              <div className="relative inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-gold-light to-gold mb-4">
+                <Award className="text-white" size={28} />
+              </div>
+              <h3 className="font-display text-xl font-semibold mb-1.5">{award.title}</h3>
+              <p className="text-lotus-600 dark:text-lotus-300 text-sm mb-3">{award.event}</p>
+              <p className="text-sm mb-4 text-slate-500 dark:text-slate-400">{award.description}</p>
+              <span className="chip">{award.year}</span>
             </motion.div>
           ))}
         </div>
 
-        {/* Certifications Section */}
+        {/* Certifications */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          initial={{ opacity: 0, y: 32 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ duration: 0.55, delay: 0.35 }}
           className="text-center mb-12"
         >
-          <h3 className={`text-3xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+          <h3 className="font-display text-3xl font-semibold">
             <span className="gradient-text">Licenses & Certifications</span>
           </h3>
         </motion.div>
 
-        {/* Certifications Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {certifications.map((cert, index) => (
-            <motion.div
-              key={cert.id || index}
-              initial={{ opacity: 0, y: 50 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.5 + index * 0.1 }}
-            >
-              <Tilt
-                tiltMaxAngleX={8}
-                tiltMaxAngleY={8}
-                glareEnable={true}
-                glareMaxOpacity={0.1}
-                glareColor={colors[index % colors.length]}
-                className="h-full"
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {certifications.map((cert, index) => {
+            const certImages = cert.media?.filter((m) => m.file_type?.includes('image')) || []
+            const certFiles = cert.media?.filter((m) => !m.file_type?.includes('image')) || []
+
+            return (
+              <motion.div
+                key={cert.id || index}
+                initial={{ opacity: 0, y: 32 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.55, delay: 0.45 + index * 0.08 }}
+                className="card card-hover p-6"
               >
-                <div className={`rounded-3xl p-6 h-full card-hover transition-colors ${isDark ? 'glass' : 'bg-white shadow-xl border border-gray-100'
-                  }`}>
-                  <div className="flex items-start gap-4">
-                    {/* Icon/Image */}
-                    <div
-                      className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 overflow-hidden"
-                      style={{ backgroundColor: `${colors[index % colors.length]}20` }}
-                    >
-                      {cert.image ? (
-                        <img loading="lazy" src={cert.image.startsWith('http') ? cert.image : `${MEDIA_BASE_URL}${cert.image}`} alt={cert.title} className="w-full h-full object-cover" />
-                      ) : (
-                        icons[index % icons.length]
-                      )}
-                    </div>
+                <div className="flex items-start gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-lotus-50 dark:bg-lotus-400/10 flex items-center justify-center text-2xl shrink-0 overflow-hidden">
+                    {cert.image ? (
+                      <img loading="lazy" src={mediaUrl(cert.image)} alt={cert.title} className="w-full h-full object-cover" />
+                    ) : (
+                      cert.icon || FALLBACK_ICONS[index % FALLBACK_ICONS.length]
+                    )}
+                  </div>
 
-                    {/* Content */}
-                    <div className="flex-1">
-                      <h4 className={`text-lg font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{cert.title}</h4>
-                      <p className="text-sm mb-2" style={{ color: colors[index % colors.length] }}>{cert.issuer}</p>
-                      <p className={`text-sm mb-3 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{cert.description}</p>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-lg font-semibold mb-0.5 leading-snug">{cert.title}</h4>
+                    <p className="text-sm mb-2 text-lotus-600 dark:text-lotus-300">{cert.issuer}</p>
+                    <p className="text-sm mb-3 text-slate-500 dark:text-slate-400">{cert.description}</p>
 
-                      {/* Skills */}
-                      {cert.skills && cert.skills.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 mb-3">
-                          {cert.skills.slice(0, 4).map((skill) => {
-                            const { icon: SkillIcon, color } = getSkillIcon(skill.name)
-                            return (
-                              <motion.span
-                                key={skill.id}
-                                whileHover={{ scale: 1.05, y: -2 }}
-                                className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg cursor-default transition-all ${isDark
-                                    ? 'bg-white/5 hover:bg-white/10 border border-white/10'
-                                    : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
-                                  }`}
-                                style={{
-                                  boxShadow: isDark ? `0 0 10px ${color}20` : 'none'
-                                }}
-                              >
-                                <SkillIcon size={12} style={{ color }} />
-                                <span className={isDark ? 'text-gray-300' : 'text-gray-600'}>
-                                  {skill.name.length > 15 ? skill.name.substring(0, 15) + '...' : skill.name}
-                                </span>
-                              </motion.span>
-                            )
-                          })}
-                          {cert.skills.length > 4 && (
-                            <span className={`inline-flex items-center text-xs px-2 py-1 rounded-lg ${isDark ? 'bg-indigo-500/20 text-indigo-300' : 'bg-indigo-100 text-indigo-600'
-                              }`}>
-                              +{cert.skills.length - 4} more
+                    {cert.skills?.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mb-3">
+                        {cert.skills.slice(0, 4).map((skill) => {
+                          const { icon: SkillIcon, color } = getSkillData(skill.name)
+                          return (
+                            <span key={skill.id} className="chip">
+                              <SkillIcon size={12} style={{ color }} />
+                              {skill.name.length > 15 ? `${skill.name.substring(0, 15)}…` : skill.name}
                             </span>
-                          )}
-                        </div>
-                      )}
+                          )
+                        })}
+                        {cert.skills.length > 4 && <span className="chip">+{cert.skills.length - 4} more</span>}
+                      </div>
+                    )}
 
-                      {/* Media Preview Images */}
-                      {cert.media && cert.media.length > 0 && (
-                        <div className="mb-3">
-                          <div className="flex flex-wrap gap-2">
-                            {cert.media.filter(m => m.file_type?.includes('image')).slice(0, 3).map((m, mIndex) => (
-                              <motion.button
-                                key={m.id}
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => openLightbox(cert.media, mIndex)}
-                                className={`relative w-16 h-16 rounded-xl overflow-hidden group cursor-pointer ${isDark ? 'ring-1 ring-white/10' : 'ring-1 ring-gray-200'
-                                  }`}
-                              >
-                                <img loading="lazy"
-                                  src={`${MEDIA_BASE_URL}${m.file_path}`}
-                                  alt={m.title || 'Certificate'}
-                                  className="w-full h-full object-cover transition-transform group-hover:scale-110"
-                                />
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                                  <ImageIcon size={16} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                                </div>
-                              </motion.button>
-                            ))}
-                            {cert.media.filter(m => m.file_type?.includes('image')).length > 3 && (
-                              <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => openLightbox(cert.media, 3)}
-                                className={`w-16 h-16 rounded-xl flex items-center justify-center cursor-pointer transition-colors ${isDark
-                                    ? 'bg-white/5 hover:bg-white/10 ring-1 ring-white/10'
-                                    : 'bg-gray-100 hover:bg-gray-200 ring-1 ring-gray-200'
-                                  }`}
-                              >
-                                <span className={`text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                                  +{cert.media.filter(m => m.file_type?.includes('image')).length - 3}
-                                </span>
-                              </motion.button>
-                            )}
-                            {/* Non-image files as buttons */}
-                            {cert.media.filter(m => !m.file_type?.includes('image')).map((m) => (
-                              <a
-                                key={m.id}
-                                href={`${MEDIA_BASE_URL}${m.file_path}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={`w-16 h-16 rounded-xl flex flex-col items-center justify-center gap-1 transition-colors ${isDark
-                                    ? 'bg-white/5 hover:bg-white/10 ring-1 ring-white/10'
-                                    : 'bg-gray-100 hover:bg-gray-200 ring-1 ring-gray-200'
-                                  }`}
-                              >
-                                <FileText size={16} className={isDark ? 'text-gray-400' : 'text-gray-500'} />
-                                <span className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                                  {m.file_type?.split('/')[1]?.toUpperCase() || 'FILE'}
-                                </span>
-                              </a>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="flex items-center justify-between">
-                        <div className={`flex items-center gap-1 text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                          <Calendar size={12} />
-                          {cert.issue_date ? new Date(cert.issue_date).getFullYear() : 'N/A'}
-                        </div>
-                        {cert.credential_url && (
+                    {(certImages.length > 0 || certFiles.length > 0) && (
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {certImages.slice(0, 3).map((m, mIndex) => (
+                          <button
+                            key={m.id}
+                            onClick={() => openLightbox(cert.media, mIndex)}
+                            className="relative w-16 h-16 rounded-xl overflow-hidden group cursor-pointer ring-1 ring-cream-300 dark:ring-white/10"
+                          >
+                            <img
+                              loading="lazy"
+                              src={mediaUrl(m.file_path)}
+                              alt={m.title || 'Certificate'}
+                              className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-night-900/0 group-hover:bg-night-900/30 transition-colors flex items-center justify-center">
+                              <ImageIcon size={16} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </div>
+                          </button>
+                        ))}
+                        {certImages.length > 3 && (
+                          <button
+                            onClick={() => openLightbox(cert.media, 3)}
+                            className="w-16 h-16 rounded-xl flex items-center justify-center cursor-pointer bg-cream-100 dark:bg-white/5 hover:bg-cream-200 dark:hover:bg-white/10 ring-1 ring-cream-300 dark:ring-white/10 transition-colors"
+                          >
+                            <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                              +{certImages.length - 3}
+                            </span>
+                          </button>
+                        )}
+                        {certFiles.map((m) => (
                           <a
-                            href={cert.credential_url}
+                            key={m.id}
+                            href={mediaUrl(m.file_path)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={`transition-colors ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-400 hover:text-indigo-600'}`}
+                            className="w-16 h-16 rounded-xl flex flex-col items-center justify-center gap-1 bg-cream-100 dark:bg-white/5 hover:bg-cream-200 dark:hover:bg-white/10 ring-1 ring-cream-300 dark:ring-white/10 transition-colors"
                           >
-                            <ExternalLink size={16} />
+                            <FileText size={16} className="text-slate-500 dark:text-slate-400" />
+                            <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                              {m.file_type?.split('/')[1]?.toUpperCase() || 'FILE'}
+                            </span>
                           </a>
-                        )}
+                        ))}
                       </div>
+                    )}
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+                        <Calendar size={12} />
+                        {cert.issue_date ? new Date(cert.issue_date).getFullYear() : 'N/A'}
+                      </div>
+                      {cert.credential_url && (
+                        <a
+                          href={cert.credential_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="View credential"
+                          className="text-slate-400 hover:text-lotus-600 dark:hover:text-lotus-300 transition-colors"
+                        >
+                          <ExternalLink size={16} />
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>
-              </Tilt>
-            </motion.div>
-          ))}
+              </motion.div>
+            )
+          })}
         </div>
       </div>
 
-      {/* Image Lightbox */}
       <ImageLightbox
-        images={lightboxImages}
-        initialIndex={lightboxIndex}
-        isOpen={lightboxOpen}
-        onClose={() => setLightboxOpen(false)}
+        images={lightbox.images}
+        initialIndex={lightbox.index}
+        isOpen={lightbox.open}
+        onClose={() => setLightbox((prev) => ({ ...prev, open: false }))}
       />
     </section>
   )

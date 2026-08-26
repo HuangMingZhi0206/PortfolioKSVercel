@@ -12,6 +12,15 @@ dist
 dist-ssr
 *.local
 
+# Environment files (never commit secrets)
+.env
+.env.*
+!.env.example
+server/.env
+
+# Local tooling
+.claude/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -22,5 +31,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local database & archives
+server/data/*.db
+*.rar
 
 .vercel

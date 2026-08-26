@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight, Download } from 'lucide-react'
 
-import { MEDIA_BASE_URL } from '../config/api'
+import { mediaUrl } from '../lib/media'
 
 const ImageLightbox = ({ images, initialIndex = 0, isOpen, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
@@ -10,6 +10,14 @@ const ImageLightbox = ({ images, initialIndex = 0, isOpen, onClose }) => {
   useEffect(() => {
     setCurrentIndex(initialIndex)
   }, [initialIndex])
+
+  const handlePrev = useCallback(() => {
+    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
+  }, [images.length])
+
+  const handleNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+  }, [images.length])
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -21,7 +29,7 @@ const ImageLightbox = ({ images, initialIndex = 0, isOpen, onClose }) => {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, currentIndex])
+  }, [isOpen, onClose, handlePrev, handleNext])
 
   // Disable body scroll when lightbox is open
   useEffect(() => {
@@ -34,14 +42,6 @@ const ImageLightbox = ({ images, initialIndex = 0, isOpen, onClose }) => {
       document.body.style.overflow = 'unset'
     }
   }, [isOpen])
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
-  }
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
-  }
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
@@ -74,7 +74,7 @@ const ImageLightbox = ({ images, initialIndex = 0, isOpen, onClose }) => {
 
           {/* Download Button */}
           <a
-            href={`${MEDIA_BASE_URL}${currentImage.file_path}`}
+            href={mediaUrl(currentImage.file_path)}
             download
             target="_blank"
             rel="noopener noreferrer"
@@ -120,7 +120,7 @@ const ImageLightbox = ({ images, initialIndex = 0, isOpen, onClose }) => {
             className="max-w-[90vw] max-h-[85vh] flex flex-col items-center"
           >
             <img loading="lazy"
-              src={`${MEDIA_BASE_URL}${currentImage.file_path}`}
+              src={mediaUrl(currentImage.file_path)}
               alt={currentImage.title || 'Image'}
               className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl"
             />
@@ -146,7 +146,7 @@ const ImageLightbox = ({ images, initialIndex = 0, isOpen, onClose }) => {
                     }`}
                 >
                   <img loading="lazy"
-                    src={`${MEDIA_BASE_URL}${img.file_path}`}
+                    src={mediaUrl(img.file_path)}
                     alt={img.title || `Thumbnail ${index + 1}`}
                     className="w-full h-full object-cover"
                   />

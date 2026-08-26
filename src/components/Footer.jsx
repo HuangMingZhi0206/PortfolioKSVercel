@@ -1,59 +1,41 @@
-import { motion } from 'framer-motion'
-import { Heart, ArrowUp } from 'lucide-react'
-import { useTheme } from '../context/ThemeContext'
+import { ArrowUp } from 'lucide-react'
+import { NAV_LINKS, SITE } from '../constants'
+import { LotusMark } from './decor/Lotus'
 
 const Footer = () => {
-  const { isDark } = useTheme()
-  
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
   const currentYear = new Date().getFullYear()
 
-  const quickLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'About', href: '#about' },
-    { name: 'Skills', href: '#skills' },
-    { name: 'Experience', href: '#experience' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Contact', href: '#contact' },
-  ]
-
   return (
-    <footer className={`relative py-12 overflow-hidden transition-colors ${
-      isDark ? 'bg-[#0a0a0f]' : 'bg-gray-50'
-    }`}>
-      {/* Top Border */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
+    <footer className="relative py-12 mt-8">
+      {/* Top hairline */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-lotus-300 dark:via-lotus-400/40 to-transparent" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 max-w-content mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           {/* Brand */}
           <div>
-            <motion.a
+            <a
               href="#home"
-              whileHover={{ scale: 1.05 }}
-              className={`inline-block text-3xl font-bold mb-4 ${isDark ? 'gradient-text' : 'text-indigo-600'}`}
+              className="inline-flex items-center gap-2 mb-3 text-lotus-700 dark:text-lotus-200"
             >
-              KS
-            </motion.a>
-            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              Product Development Engineer | Robotics & IoT Innovator | Tech Entrepreneur
+              <LotusMark size={28} />
+              <span className="font-display text-2xl font-semibold">{SITE.name}</span>
+            </a>
+            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+              {SITE.tagline}
             </p>
           </div>
 
-          {/* Quick Links */}
+          {/* Quick links */}
           <div>
-            <h4 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Quick Links</h4>
+            <h4 className="font-semibold mb-4">Quick Links</h4>
             <div className="grid grid-cols-2 gap-2">
-              {quickLinks.map((link) => (
+              {NAV_LINKS.map((link) => (
                 <a
                   key={link.name}
                   href={link.href}
-                  className={`text-sm transition-colors ${
-                    isDark ? 'text-gray-400 hover:text-indigo-400' : 'text-gray-600 hover:text-indigo-600'
-                  }`}
+                  className="text-sm text-slate-500 dark:text-slate-400 hover:text-lotus-600 dark:hover:text-lotus-300 transition-colors"
                 >
                   {link.name}
                 </a>
@@ -63,38 +45,29 @@ const Footer = () => {
 
           {/* Contact */}
           <div>
-            <h4 className={`font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Contact</h4>
-            <div className={`space-y-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              <p>kevinsyonin.266@gmail.com</p>
-              <p>Central Jakarta, Indonesia</p>
+            <h4 className="font-semibold mb-4">Contact</h4>
+            <div className="space-y-2 text-sm text-slate-500 dark:text-slate-400">
+              <p>{SITE.email}</p>
+              <p>{SITE.location}</p>
             </div>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className={`border-t pt-8 ${isDark ? 'border-white/10' : 'border-gray-200'}`}>
+        <div className="border-t border-cream-300 dark:border-white/10 pt-7">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            {/* Copyright */}
-            <p className={`text-sm flex items-center gap-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              © {currentYear} Kevin Syonin.
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              © {currentYear} {SITE.name}
             </p>
 
-            {/* Back to Top */}
-            <motion.button
+            <button
               onClick={scrollToTop}
-              whileHover={{ scale: 1.1, y: -2 }}
-              whileTap={{ scale: 0.9 }}
-              className={`flex items-center gap-2 text-sm transition-colors ${
-                isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-indigo-600'
-              }`}
+              className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-lotus-600 dark:hover:text-lotus-300 transition-colors group"
             >
               Back to Top
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                isDark ? 'glass' : 'bg-white shadow-md border border-gray-100'
-              }`}>
-                <ArrowUp size={16} />
-              </div>
-            </motion.button>
+              <span className="w-8 h-8 rounded-full card flex items-center justify-center group-hover:-translate-y-0.5 transition-transform">
+                <ArrowUp size={15} />
+              </span>
+            </button>
           </div>
         </div>
       </div>

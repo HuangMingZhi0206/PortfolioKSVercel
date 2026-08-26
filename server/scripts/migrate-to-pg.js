@@ -1,3 +1,4 @@
+﻿import 'dotenv/config';
 import pg from 'pg';
 import fs from 'fs';
 import path from 'path';
@@ -10,7 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function migrate() {
-  const connectionString = 'postgresql://postgres.tdzyduamddvbspwyvryy:passangelkevin0206@aws-1-ap-northeast-1.pooler.supabase.com:6543/postgres';
+  const connectionString = process.env.DATABASE_URL;
   const pgClient = new Client({ connectionString });
   
   try {
@@ -275,3 +276,4 @@ async function migrate() {
 }
 
 migrate();
+
