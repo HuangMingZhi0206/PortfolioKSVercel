@@ -5,11 +5,12 @@ dotenv.config()
 
 const { Pool } = pg
 
-// Connection pool tuned for the Supabase pooler: keep connections fresh
-// (the pooler silently drops idle ones) and always use SSL.
+const isSupabase = process.env.DATABASE_URL?.includes('supabase') || process.env.DB_REQUIRE_SSL === 'true';
+
+// Connection pool tuned for the Supabase pooler or standard PostgreSQL
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
+  ...(isSupabase && { ssl: { rejectUnauthorized: false } }),
   max: 5,
   idleTimeoutMillis: 10000,
   connectionTimeoutMillis: 10000,

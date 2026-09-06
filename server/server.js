@@ -83,6 +83,18 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!' })
 })
 
+// Serve static files in production
+if (process.env.NODE_ENV === 'production' || process.env.RUN_LOCAL === 'true') {
+  const distPath = path.join(__dirname, '../dist');
+  app.use(express.static(distPath));
+
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(distPath, 'index.html'));
+    }
+  });
+}
+
 // Export app for Vercel Serverless
 export default app;
 
